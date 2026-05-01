@@ -1,0 +1,34 @@
+name: venton_pro
+description: VENTON PRO - Marketplace digital de Santa Rosa de Cabal para el mundo
+publish_to: 'none'
+version: 3.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+
+  # Firebase (gratis hasta cierto límite)
+  firebase_core: ^2.27.0
+  firebase_auth: ^4.17.8
+  cloud_firestore: ^4.15.8
+  firebase_storage: ^11.6.9
+
+  # Imágenes y videos
+  image_picker: ^1.0.7
+  cached_network_image: ^3.3.1
+
+  # Utilidades
+  url_launcher: ^6.2.5
+  shared_preferences: ^2.2.2
+  geolocator: ^11.0.0
+
+dev_dependencies:
+  flutter_lints: ^3.0.1
+
+flutter:
+  uses-material-design: true

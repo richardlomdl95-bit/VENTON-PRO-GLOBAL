@@ -1,0 +1,4 @@
+storePassword=
+keyPassword=
+keyAlias=venton
+storeFile=../venton-release.jks
