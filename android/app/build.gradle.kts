@@ -10,19 +10,19 @@ android {
     compileSdk = 34
     ndkVersion = flutter.ndkVersion
 
-    signingConfigs {
-        create("release") {
-            def keystorePropertiesFile = rootProject.file("key.properties")
-            def keystoreProperties = new Properties()
-            if (keystorePropertiesFile.exists()) {
-                keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-            }
-            // keyAlias keystoreProperties['keyAlias']
-            // keyPassword keystoreProperties['keyPassword']
-            // storeFile file(keystoreProperties['storeFile'])
-            // storePassword keystoreProperties['storePassword']
-        }
-    }
+    // signingConfigs {
+    //     create("release") {
+    //         def keystorePropertiesFile = rootProject.file("key.properties")
+    //         def keystoreProperties = new Properties()
+    //         if (keystorePropertiesFile.exists()) {
+    //             keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+    //         }
+    //         // keyAlias keystoreProperties['keyAlias']
+    //         // keyPassword keystoreProperties['keyPassword']
+    //         // storeFile file(keystoreProperties['storeFile'])
+    //         // storePassword keystoreProperties['storePassword']
+    //     }
+    // }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -46,7 +46,7 @@ android {
 
     buildTypes {
         release {
-            // signingConfig = signingConfigs.getByName("release")
+            // Sin configuración de firma para debug
         }
     }
 }
