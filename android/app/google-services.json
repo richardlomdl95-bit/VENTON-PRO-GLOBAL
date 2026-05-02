@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "187290127459",
+    "project_id": "venton-pro",
+    "storage_bucket": "venton-pro.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:187290127459:android:f5d475f840d805388ebc56",
+        "android_client_info": {
+          "package_name": "com.ventonpro.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoHqD__axwwS_AxvG-aGRuRVzQ1X01F4g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:187290127459:android:5bcba477b794505c8ebc56",
+        "android_client_info": {
+          "package_name": "com.ventonpro.global"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoHqD__axwwS_AxvG-aGRuRVzQ1X01F4g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
