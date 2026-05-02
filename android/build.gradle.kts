@@ -26,6 +26,10 @@ subprojects {
     project.evaluationDependsOn(":app")
 }
 
+android {
+    compileSdk = 35
+}
+
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
