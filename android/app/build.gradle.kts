@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.ventonpro.app"
-    compileSdk = 34
+    compileSdk = 35
     ndkVersion = flutter.ndkVersion
 
     // signingConfigs {
