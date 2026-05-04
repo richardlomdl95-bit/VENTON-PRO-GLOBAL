@@ -157,7 +157,7 @@ class VentonConfig {
 void main() {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
-    runApp(const MyApp());
+    runApp(const VentonProApp());
   }, (error, stack) {
     runApp(MaterialApp(
       debugShowCheckedModeBanner: false,
