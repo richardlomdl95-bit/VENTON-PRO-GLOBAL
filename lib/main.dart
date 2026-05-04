@@ -155,25 +155,46 @@ class VentonConfig {
 // =============================================================================
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
-
+  // Capturar cualquier error durante la inicialización
   try {
-    await Firebase.initializeApp();
-    debugPrint('Firebase initialized successfully');
-  } catch (e) {
-    debugPrint('Firebase init error: $e');
+    debugPrint('=== VENTON PRO STARTING ===');
+    
+    WidgetsFlutterBinding.ensureInitialized();
+    debugPrint('✓ WidgetsFlutterBinding initialized');
+    
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    debugPrint('✓ Screen orientation set');
+    
+    // Inicialización Firebase con diagnóstico detallado
+    debugPrint('🔥 Initializing Firebase...');
+    try {
+      await Firebase.initializeApp();
+      debugPrint('✓ Firebase initialized successfully');
+    } catch (e) {
+      debugPrint('❌ Firebase init error: $e');
+      debugPrint('❌ Stack trace: ${StackTrace.current}');
+      // Continuar sin Firebase si falla
+    }
+    
+    // Manejo global de errores
+    FlutterError.onError = (FlutterErrorDetails details) {
+      debugPrint('❌ Flutter Error: ${details.toString()}');
+      debugPrint('❌ Error Stack: ${details.stack}');
+    };
+    
+    debugPrint('🚀 Starting VentonProApp...');
+    runApp(const VentonProApp());
+    
+  } catch (e, stackTrace) {
+    debugPrint('💥 CRITICAL ERROR IN MAIN(): $e');
+    debugPrint('💥 Stack: $stackTrace');
+    
+    // Arranque de emergencia con app mínima
+    runApp(EmergencyApp(error: e.toString()));
   }
-
-  // Manejo global de errores
-  FlutterError.onError = (FlutterErrorDetails details) {
-    debugPrint('Flutter Error: ${details.toString()}');
-  };
-
-  runApp(const VentonProApp());
 }
 
 // =============================================================================
@@ -185,30 +206,116 @@ class VentonProApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: VentonConfig.appName,
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: VentonConfig.brandPrimary,
-          brightness: Brightness.light,
+    try {
+      debugPrint('🏗️ Building VentonProApp...');
+      
+      return MaterialApp(
+        title: VentonConfig.appName,
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: VentonConfig.brandPrimary,
+            brightness: Brightness.light,
+          ),
+          useMaterial3: true,
+          appBarTheme: const AppBarTheme(
+            backgroundColor: VentonConfig.brandPrimary,
+            foregroundColor: Colors.white,
+            elevation: 0,
+          ),
         ),
-        useMaterial3: true,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: VentonConfig.brandPrimary,
-          foregroundColor: Colors.white,
-          elevation: 0,
+        // Soporte multiidioma automático
+        locale: ui.PlatformDispatcher.instance.locale,
+        supportedLocales: const [
+          Locale('es'),
+          Locale('en'),
+          Locale('pt'),
+          Locale('fr'),
+        ],
+        home: const SafeSplashScreen(),
+      );
+    } catch (e, stackTrace) {
+      debugPrint('💥 ERROR IN VENTONPROAPP BUILD: $e');
+      debugPrint('💥 Stack: $stackTrace');
+      return EmergencyApp(error: 'VentonProApp build error: $e');
+    }
+  }
+}
+
+// =============================================================================
+// APP DE EMERGENCIA
+// =============================================================================
+
+class EmergencyApp extends StatelessWidget {
+  final String error;
+  const EmergencyApp({super.key, required this.error});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'VENTON PRO - Emergency Mode',
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        backgroundColor: Colors.red[900],
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error, size: 80, color: Colors.white),
+                const SizedBox(height: 24),
+                const Text(
+                  'VENTON PRO',
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'EMERGENCY MODE',
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    'Error: $error',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      fontFamily: 'monospace',
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () {
+                    // Intentar reiniciar la app
+                    SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.red[900],
+                  ),
+                  child: const Text('CLOSE APP'),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
-      // Soporte multiidioma automático
-      locale: ui.PlatformDispatcher.instance.locale,
-      supportedLocales: const [
-        Locale('es'),
-        Locale('en'),
-        Locale('pt'),
-        Locale('fr'),
-      ],
-      home: const SplashScreen(),
     );
   }
 }
@@ -329,36 +436,64 @@ class ErrorPage extends StatelessWidget {
 }
 
 // =============================================================================
-// PANTALLA DE BIENVENIDA
+// PANTALLA DE BIENVENIDA SEGURA
 // =============================================================================
 
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+class SafeSplashScreen extends StatefulWidget {
+  const SafeSplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  State<SafeSplashScreen> createState() => _SafeSplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SafeSplashScreenState extends State<SafeSplashScreen> {
+  String _status = 'Iniciando...';
+  String _error = '';
+
   @override
   void initState() {
     super.initState();
-    _iniciar();
+    debugPrint('🎬 SafeSplashScreen initialized');
+    _iniciarSeguro();
   }
 
-  Future<void> _iniciar() async {
+  Future<void> _iniciarSeguro() async {
     try {
+      setState(() => _status = 'Cargando componentes...');
+      debugPrint('⏳ Waiting 2 seconds...');
+      
       await Future.delayed(const Duration(seconds: 2));
-      if (!mounted) return;
+      
+      if (!mounted) {
+        debugPrint('❌ Widget not mounted after delay');
+        return;
+      }
+      
+      setState(() => _status = 'Navegando a pantalla principal...');
+      debugPrint('🧭 Navigating to HomeShell...');
+      
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const HomeShell()),
+        MaterialPageRoute(builder: (_) => const SafeHomeShell()),
       );
-    } catch (e) {
-      debugPrint('Splash navigation error: $e');
+      
+    } catch (e, stackTrace) {
+      debugPrint('💥 SPLASH CRASH: $e');
+      debugPrint('💥 Splash Stack: $stackTrace');
+      
       if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const ErrorPage()),
-        );
+        setState(() {
+          _status = 'Error detectado';
+          _error = e.toString();
+        });
+        
+        // Navegación a página de error después de mostrar el error
+        Future.delayed(const Duration(seconds: 3), () {
+          if (mounted) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => DiagnosticPage(error: e.toString())),
+            );
+          }
+        });
       }
     }
   }
@@ -368,35 +503,260 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       backgroundColor: VentonConfig.brandPrimary,
       body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 110,
+                height: 110,
+                decoration: BoxDecoration(
+                  color: VentonConfig.brandAccent,
+                  borderRadius: BorderRadius.circular(28),
+                ),
+                child: const Icon(
+                  Icons.storefront,
+                  size: 60,
+                  color: VentonConfig.brandPrimary,
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'VENTON PRO',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Marketplace de Santa Rosa de Cabal',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white.withOpacity(0.9),
+                ),
+              ),
+              const SizedBox(height: 32),
+              Text(
+                _status,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              if (_error.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    'Error: $_error',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.white,
+                      fontFamily: 'monospace',
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// =============================================================================
+// HOME SHELL SEGURO
+// =============================================================================
+
+class SafeHomeShell extends StatefulWidget {
+  const SafeHomeShell({super.key});
+
+  @override
+  State<SafeHomeShell> createState() => _SafeHomeShellState();
+}
+
+class _SafeHomeShellState extends State<SafeHomeShell> {
+  int _index = 0;
+  String _error = '';
+
+  @override
+  void initState() {
+    super.initState();
+    debugPrint('🏠 SafeHomeShell initialized');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    try {
+      debugPrint('🏗️ Building SafeHomeShell...');
+      
+      // Páginas seguras con wrapper
+      final List<Widget> _pages = [
+        const SafePageWrapper(child: InicioPage()),
+        const SafePageWrapper(child: TurismoPage()),
+        const SafePageWrapper(child: PublicidadPage()),
+        const SafePageWrapper(child: CafePage()),
+        const SafePageWrapper(child: MasPage()),
+      ];
+
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('VENTON PRO'),
+          backgroundColor: VentonConfig.brandPrimary,
+          foregroundColor: Colors.white,
+        ),
+        body: IndexedStack(index: _index, children: _pages),
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: _index,
+          onDestinationSelected: (i) {
+            try {
+              setState(() => _index = i);
+              debugPrint('📍 Navigation to index: $i');
+            } catch (e) {
+              debugPrint('💥 Navigation error: $e');
+            }
+          },
+          destinations: const [
+            NavigationDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: 'Inicio'),
+            NavigationDestination(
+                icon: Icon(Icons.terrain_outlined),
+                selectedIcon: Icon(Icons.terrain),
+                label: 'Turismo'),
+            NavigationDestination(
+                icon: Icon(Icons.campaign_outlined),
+                selectedIcon: Icon(Icons.campaign),
+                label: 'Publicidad'),
+            NavigationDestination(
+                icon: Icon(Icons.coffee_outlined),
+                selectedIcon: Icon(Icons.coffee),
+                label: 'Café'),
+            NavigationDestination(
+                icon: Icon(Icons.menu_outlined),
+                selectedIcon: Icon(Icons.menu),
+                label: 'Más'),
+          ],
+        ),
+      );
+    } catch (e, stackTrace) {
+      debugPrint('💥 HOMESHELL BUILD ERROR: $e');
+      debugPrint('💥 HomeShell Stack: $stackTrace');
+      
+      return Scaffold(
+        backgroundColor: Colors.red[100],
+        appBar: AppBar(
+          title: const Text('VENTON PRO - ERROR'),
+          backgroundColor: Colors.red[900],
+          foregroundColor: Colors.white,
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error, size: 80, color: Colors.red),
+                const SizedBox(height: 24),
+                const Text(
+                  'Error en HomeShell',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Error: $e',
+                  style: const TextStyle(fontSize: 14, fontFamily: 'monospace'),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () => Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => DiagnosticPage(error: e.toString())),
+                  ),
+                  child: const Text('VER DETALLES'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+  }
+}
+
+// =============================================================================
+// PÁGINA DE DIAGNÓSTICO
+// =============================================================================
+
+class DiagnosticPage extends StatelessWidget {
+  final String error;
+  const DiagnosticPage({super.key, required this.error});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey[100],
+      appBar: AppBar(
+        title: const Text('DIAGNÓSTICO'),
+        backgroundColor: Colors.orange[900],
+        foregroundColor: Colors.white,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 110,
-              height: 110,
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: VentonConfig.brandAccent,
-                borderRadius: BorderRadius.circular(28),
+                color: Colors.orange[50],
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.orange[300]!),
               ),
-              child: const Icon(Icons.travel_explore,
-                  size: 60, color: VentonConfig.brandPrimary),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'VENTON PRO - DIAGNÓSTICO',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Error detectado: $error',
+                    style: const TextStyle(fontSize: 14, fontFamily: 'monospace'),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 24),
-            const Text('VENTON PRO',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 2)),
+            const SizedBox(height: 16),
+            const Text(
+              'INSTRUCCIONES:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 8),
-            const Text('Santa Rosa de Cabal · Mundo',
-                style: TextStyle(color: Colors.white70, fontSize: 14)),
-            const SizedBox(height: 32),
-            const SizedBox(
-              width: 32,
-              height: 32,
-              child: CircularProgressIndicator(
-                  color: VentonConfig.brandAccent, strokeWidth: 3),
+            const Text('1. Toma una captura de pantalla de esta página'),
+            const Text('2. Envía esta información al desarrollador'),
+            const Text('3. El error específico ayudará a corregir el problema'),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => const SafeHomeShell()),
+                );
+              },
+              child: const Text('REINTENTAR INICIO'),
             ),
           ],
         ),
