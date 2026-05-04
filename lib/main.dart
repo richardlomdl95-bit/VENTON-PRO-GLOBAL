@@ -163,9 +163,15 @@ void main() async {
 
   try {
     await Firebase.initializeApp();
+    debugPrint('Firebase initialized successfully');
   } catch (e) {
-    debugPrint('Firebase init: $e');
+    debugPrint('Firebase init error: $e');
   }
+
+  // Manejo global de errores
+  FlutterError.onError = (FlutterErrorDetails details) {
+    debugPrint('Flutter Error: ${details.toString()}');
+  };
 
   runApp(const VentonProApp());
 }
@@ -208,6 +214,121 @@ class VentonProApp extends StatelessWidget {
 }
 
 // =============================================================================
+// WRAPPER SEGURO PARA PÁGINAS
+// =============================================================================
+
+class SafePageWrapper extends StatefulWidget {
+  final Widget child;
+  const SafePageWrapper({super.key, required this.child});
+
+  @override
+  State<SafePageWrapper> createState() => _SafePageWrapperState();
+}
+
+class _SafePageWrapperState extends State<SafePageWrapper> {
+  bool _hasError = false;
+  String _errorMessage = '';
+
+  @override
+  Widget build(BuildContext context) {
+    if (_hasError) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 64, color: Colors.red),
+              const SizedBox(height: 16),
+              const Text('Error en la página', style: TextStyle(fontSize: 18)),
+              const SizedBox(height: 8),
+              Text(_errorMessage, textAlign: TextAlign.center),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => setState(() => _hasError = false),
+                child: const Text('Reintentar'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    try {
+      return widget.child;
+    } catch (e) {
+      return ErrorWidget.builder(
+        FlutterErrorDetails(
+          exception: e,
+          stack: StackTrace.current,
+          library: 'VENTON PRO',
+        ),
+      );
+    }
+  }
+}
+
+// =============================================================================
+// PÁGINA DE ERROR
+// =============================================================================
+
+class ErrorPage extends StatelessWidget {
+  const ErrorPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: VentonConfig.brandPrimary,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 80, color: Colors.white),
+              const SizedBox(height: 24),
+              const Text(
+                'VENTON PRO',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Error al iniciar la aplicación',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => const HomeShell()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: VentonConfig.brandAccent,
+                  foregroundColor: VentonConfig.brandPrimary,
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                ),
+                child: const Text(
+                  'Reintentar',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// =============================================================================
 // PANTALLA DE BIENVENIDA
 // =============================================================================
 
@@ -226,11 +347,20 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _iniciar() async {
-    await Future.delayed(const Duration(seconds: 2));
-    if (!mounted) return;
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const HomeShell()),
-    );
+    try {
+      await Future.delayed(const Duration(seconds: 2));
+      if (!mounted) return;
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const HomeShell()),
+      );
+    } catch (e) {
+      debugPrint('Splash navigation error: $e');
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const ErrorPage()),
+        );
+      }
+    }
   }
 
   @override
@@ -289,12 +419,12 @@ class HomeShell extends StatefulWidget {
 class _HomeShellState extends State<HomeShell> {
   int _index = 0;
 
-  final List<Widget> _pages = const [
-    InicioPage(),
-    TurismoPage(),
-    PublicidadPage(),
-    CafePage(),
-    MasPage(),
+  final List<Widget> _pages = [
+    const SafePageWrapper(child: InicioPage()),
+    const SafePageWrapper(child: TurismoPage()),
+    const SafePageWrapper(child: PublicidadPage()),
+    const SafePageWrapper(child: CafePage()),
+    const SafePageWrapper(child: MasPage()),
   ];
 
   @override
