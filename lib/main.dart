@@ -154,47 +154,51 @@ class VentonConfig {
 // PUNTO DE ENTRADA
 // =============================================================================
 
-void main() async {
-  // Capturar cualquier error durante la inicialización
-  try {
-    debugPrint('=== VENTON PRO STARTING ===');
-    
+void main() {
+  runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
-    debugPrint('✓ WidgetsFlutterBinding initialized');
-    
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-    debugPrint('✓ Screen orientation set');
-    
-    // Inicialización Firebase con diagnóstico detallado
-    debugPrint('🔥 Initializing Firebase...');
-    try {
-      await Firebase.initializeApp();
-      debugPrint('✓ Firebase initialized successfully');
-    } catch (e) {
-      debugPrint('❌ Firebase init error: $e');
-      debugPrint('❌ Stack trace: ${StackTrace.current}');
-      // Continuar sin Firebase si falla
-    }
-    
-    // Manejo global de errores
-    FlutterError.onError = (FlutterErrorDetails details) {
-      debugPrint('❌ Flutter Error: ${details.toString()}');
-      debugPrint('❌ Error Stack: ${details.stack}');
-    };
-    
-    debugPrint('🚀 Starting VentonProApp...');
-    runApp(const VentonProApp());
-    
-  } catch (e, stackTrace) {
-    debugPrint('💥 CRITICAL ERROR IN MAIN(): $e');
-    debugPrint('💥 Stack: $stackTrace');
-    
-    // Arranque de emergencia con app mínima
-    runApp(EmergencyApp(error: e.toString()));
-  }
+    runApp(const MyApp());
+  }, (error, stack) {
+    runApp(MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'ERROR CAPTURADO',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  '$error',
+                  style: const TextStyle(fontSize: 14, color: Colors.black),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'STACK TRACE:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '$stack',
+                  style: const TextStyle(fontSize: 12, color: Colors.black87),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ));
+  });
 }
 
 // =============================================================================
