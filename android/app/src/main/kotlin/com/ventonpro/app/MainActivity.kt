@@ -1,4 +1,4 @@
-package com.ventonpro.global
+package com.ventonpro.app
 
 import io.flutter.embedding.android.FlutterActivity
 
