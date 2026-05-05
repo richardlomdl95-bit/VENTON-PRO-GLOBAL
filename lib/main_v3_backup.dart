@@ -864,10 +864,12 @@ class VentonHelpers {
   static Future<void> logEvent(
       String collection, Map<String, dynamic> data) async {
     try {
-      await FirebaseFirestore.instance.collection(collection).add({
-        ...data,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
+      // TODO: FIREBASE_OFF — reactivar en services/firebase_service.dart
+      // await FirebaseFirestore.instance.collection(collection).add({
+      //   ...data,
+      //   'timestamp': FieldValue.serverTimestamp(),
+      // });
+      debugPrint('Firebase desactivado temporalmente: logEvent($collection, $data)');
     } catch (e) {
       debugPrint('Firestore error: $e');
     }
@@ -1182,37 +1184,39 @@ class FeedReciente extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('feed_publicaciones')
-          .orderBy('timestamp', descending: true)
-          .limit(10)
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Padding(
-            padding: EdgeInsets.all(24),
-            child: Center(child: CircularProgressIndicator()),
-          );
-        }
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return _publicacionesIniciales();
-        }
-        final docs = snapshot.data!.docs;
-        return Column(
-          children: docs.map((doc) {
-            final data = doc.data() as Map<String, dynamic>;
-            return _PublicacionCard(
-              titulo: data['titulo'] ?? 'Sin título',
-              descripcion: data['descripcion'] ?? '',
-              imagen: data['imagen'] ?? '',
-              categoria: data['categoria'] ?? 'general',
-              patrocinado: data['patrocinado'] ?? false,
-            );
-          }).toList(),
-        );
-      },
-    );
+    // TODO: FIREBASE_OFF — reactivar en services/firebase_service.dart
+    // return StreamBuilder<QuerySnapshot>(
+    //   stream: FirebaseFirestore.instance
+    //       .collection('feed_publicaciones')
+    //       .orderBy('timestamp', descending: true)
+    //       .limit(10)
+    //       .snapshots(),
+    //   builder: (context, snapshot) {
+    //     if (snapshot.connectionState == ConnectionState.waiting) {
+    //       return const Padding(
+    //         padding: EdgeInsets.all(24),
+    //         child: Center(child: CircularProgressIndicator()),
+    //       );
+    //     }
+    //     if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+    //       return _publicacionesIniciales();
+    //     }
+    //     final docs = snapshot.data!.docs;
+    //     return Column(
+    //       children: docs.map((doc) {
+    //         final data = doc.data() as Map<String, dynamic>;
+    //         return _PublicacionCard(
+    //           titulo: data['titulo'] ?? 'Sin título',
+    //           descripcion: data['descripcion'] ?? '',
+    //           imagen: data['imagen'] ?? '',
+    //           categoria: data['categoria'] ?? 'general',
+    //           patrocinado: data['patrocinado'] ?? false,
+    //         );
+    //       }).toList(),
+    //     );
+    //   },
+    // );
+    return _publicacionesIniciales(); // Firebase desactivado temporalmente
   }
 
   Widget _publicacionesIniciales() {
@@ -2608,39 +2612,48 @@ class _SubirContenidoPageState extends State<SubirContenidoPage> {
       return;
     }
 
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      _pedirLogin();
-      return;
-    }
+    // TODO: FIREBASE_OFF — reactivar en services/firebase_service.dart
+    // final user = FirebaseAuth.instance.currentUser;
+    // if (user == null) {
+    //   _pedirLogin();
+    //   return;
+    // }
+    final user = null; // Firebase desactivado temporalmente
+    _pedirLogin();
+    return;
 
     setState(() => _subiendo = true);
 
     try {
-      final archivo = File(_archivo!.path);
-      final ext = _esVideo ? 'mp4' : 'jpg';
-      final nombre =
-          '${user.uid}_${DateTime.now().millisecondsSinceEpoch}.$ext';
-      final ref = FirebaseStorage.instance
-          .ref()
-          .child(_esVideo ? 'videos' : 'imagenes')
-          .child(nombre);
+      // TODO: FIREBASE_OFF — reactivar en services/firebase_service.dart
+      // final archivo = File(_archivo!.path);
+      // final ext = _esVideo ? 'mp4' : 'jpg';
+      // final nombre =
+      //     '${user.uid}_${DateTime.now().millisecondsSinceEpoch}.$ext';
+      // final ref = FirebaseStorage.instance
+      //     .ref()
+      //     .child(_esVideo ? 'videos' : 'imagenes')
+      //     .child(nombre);
 
-      final tarea = await ref.putFile(archivo);
-      final url = await tarea.ref.getDownloadURL();
+      // final tarea = await ref.putFile(archivo);
+      // final url = await tarea.ref.getDownloadURL();
+      final url = ''; // Firebase desactivado temporalmente
+      debugPrint('Firebase desactivado: upload simulado, url vacía');
 
-      await FirebaseFirestore.instance.collection('feed_publicaciones').add({
-        'titulo': _tituloCtrl.text.trim(),
-        'descripcion': _descripcionCtrl.text.trim(),
-        'categoria': _categoria,
-        'imagen': url,
-        'es_video': _esVideo,
-        'usuario_id': user.uid,
-        'usuario_email': user.email,
-        'patrocinado': false,
-        'aprobado': true, // moderación posterior por reportes
-        'timestamp': FieldValue.serverTimestamp(),
-      });
+      // TODO: FIREBASE_OFF — reactivar en services/firebase_service.dart
+      // await FirebaseFirestore.instance.collection('feed_publicaciones').add({
+      //   'titulo': _tituloCtrl.text.trim(),
+      //   'descripcion': _descripcionCtrl.text.trim(),
+      //   'categoria': _categoria,
+      //   'imagen': url,
+      //   'es_video': _esVideo,
+      //   'usuario_id': user.uid,
+      //   'usuario_email': user.email,
+      //   'patrocinado': false,
+      //   'aprobado': true, // moderación posterior por reportes
+      //   'timestamp': FieldValue.serverTimestamp(),
+      // });
+      debugPrint('Firebase desactivado: publicación simulada');
 
       await VentonHelpers.registrarUpload();
 
@@ -2831,27 +2844,30 @@ class _LoginSimplePageState extends State<LoginSimplePage> {
       return;
     }
     setState(() => _procesando = true);
-    try {
-      if (_esRegistro) {
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-            email: _correoCtrl.text.trim(), password: _passCtrl.text);
-      } else {
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
-            email: _correoCtrl.text.trim(), password: _passCtrl.text);
-      }
-      if (!mounted) return;
-      Navigator.pop(context);
-      VentonHelpers.mostrarMensaje(context, '¡Bienvenido a VENTON PRO!');
-    } on FirebaseAuthException catch (e) {
-      if (mounted) {
-        VentonHelpers.mostrarMensaje(
-            context, 'Error: ${e.message ?? 'desconocido'}',
-            error: true);
-      }
-    } catch (e) {
-      if (mounted) {
-        VentonHelpers.mostrarMensaje(context, 'Error inesperado', error: true);
-      }
+      // TODO: FIREBASE_OFF — reactivar en services/firebase_service.dart
+      // try {
+      //   if (_esRegistro) {
+      //     await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      //         email: _correoCtrl.text.trim(), password: _passCtrl.text);
+      //   } else {
+      //     await FirebaseAuth.instance.signInWithEmailAndPassword(
+      //         email: _correoCtrl.text.trim(), password: _passCtrl.text);
+      //   }
+      //   if (!mounted) return;
+      //   Navigator.pop(context);
+      //   VentonHelpers.mostrarMensaje(context, '¡Bienvenido a VENTON PRO!');
+      // } on FirebaseAuthException catch (e) {
+      //   if (mounted) {
+      //     VentonHelpers.mostrarMensaje(
+      //         context, 'Error: ${e.message ?? 'desconocido'}',
+      //         error: true);
+      //   }
+      // } catch (e) {
+      //   if (mounted) {
+      //     VentonHelpers.mostrarMensaje(context, 'Error inesperado', error: true);
+      //   }
+      // }
+      throw Exception('Firebase desactivado temporalmente: auth no disponible');
     } finally {
       if (mounted) setState(() => _procesando = false);
     }
