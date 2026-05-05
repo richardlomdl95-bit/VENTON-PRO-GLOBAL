@@ -12,11 +12,11 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.6
 
-  # Firebase (gratis hasta cierto límite)
-  firebase_core: ^2.27.0
-  firebase_auth: ^4.17.8
-  cloud_firestore: ^4.15.8
-  firebase_storage: ^11.6.9
+  # Firebase (gratis hasta cierto límite) - TEMPORALMENTE COMENTADO
+  # firebase_core: ^2.27.0
+  # firebase_auth: ^4.17.8
+  # cloud_firestore: ^4.15.8
+  # firebase_storage: ^11.6.9
 
   # Imágenes y videos
   image_picker: ^1.0.7
