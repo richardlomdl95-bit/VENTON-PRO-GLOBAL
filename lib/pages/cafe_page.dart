@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../main_v3_backup.dart';
+import '../core/venton_config.dart';
+import '../core/venton_helpers.dart';
 
 // =============================================================================
 

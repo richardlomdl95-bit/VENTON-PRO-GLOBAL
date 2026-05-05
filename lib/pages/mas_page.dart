@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
-import '../main_v3_backup.dart';
+import '../core/venton_config.dart';
+import '../core/venton_helpers.dart';
 
 // =============================================================================
 
@@ -28,14 +29,18 @@ class MasPage extends StatelessWidget {
               subtitulo: 'Premium para flotas y plantas',
               color: const Color(0xFF00838F),
               onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const QuimicosPage()))),
+                  MaterialPageRoute(builder: (_) => const Scaffold(
+                    body: Center(child: Text('Próximamente'))
+                  )))),
           _ItemMenu(
               icon: Icons.casino,
               titulo: 'Ruleta VENTON',
               subtitulo: 'Promoción gratis. Premios para clientes.',
               color: VentonConfig.brandAccent,
               onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const RuletaPage()))),
+                  MaterialPageRoute(builder: (_) => const Scaffold(
+                    body: Center(child: Text('Próximamente'))
+                  )))),
           const Divider(),
           _ItemMenu(
               icon: Icons.add_a_photo,
@@ -43,7 +48,9 @@ class MasPage extends StatelessWidget {
               subtitulo: 'Comparte fotos y videos de Santa Rosa',
               color: VentonConfig.brandPrimary,
               onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const SubirContenidoPage()))),
+                  MaterialPageRoute(builder: (_) => const Scaffold(
+                    body: Center(child: Text('Próximamente'))
+                  )))),
           _ItemMenu(
               icon: Icons.flag,
               titulo: 'Reportar contenido',
@@ -57,14 +64,18 @@ class MasPage extends StatelessWidget {
               subtitulo: 'Cómo cuidamos tus datos',
               color: Colors.blueGrey,
               onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const PoliticaPage()))),
+                  MaterialPageRoute(builder: (_) => const Scaffold(
+                    body: Center(child: Text('Próximamente'))
+                  )))),
           _ItemMenu(
               icon: Icons.gavel,
               titulo: 'Términos de uso',
               subtitulo: 'Reglas de la comunidad',
               color: Colors.blueGrey,
               onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const TerminosPage()))),
+                  MaterialPageRoute(builder: (_) => const Scaffold(
+                    body: Center(child: Text('Próximamente'))
+                  )))),
           _ItemMenu(
               icon: Icons.info_outline,
               titulo: 'Acerca de VENTON PRO',

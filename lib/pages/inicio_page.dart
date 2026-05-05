@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../main_v3_backup.dart';
+import '../core/venton_config.dart';
+import '../core/venton_helpers.dart';
 
 // =============================================================================
 
@@ -180,7 +181,9 @@ class InicioPage extends StatelessWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const SubirContenidoPage())),
+            MaterialPageRoute(builder: (_) => const Scaffold(
+              body: Center(child: Text('Próximamente'))
+            ))),
         backgroundColor: VentonConfig.brandAccent,
         foregroundColor: VentonConfig.brandPrimary,
         icon: const Icon(Icons.add_a_photo),
@@ -191,7 +194,7 @@ class InicioPage extends StatelessWidget {
   }
 
   void _irPagina(BuildContext context, int index) {
-    final shell = context.findAncestorStateOfType<_HomeShellState>();
+    final shell = context.findAncestorStateOfType<HomeShellState>();
     shell?.setState(() => shell._index = index);
   }
 }
