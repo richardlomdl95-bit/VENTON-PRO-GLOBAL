@@ -74,7 +74,7 @@ Enlace/Imagen: ${_enlace.text.isEmpty ? 'Sin enlace' : _enlace.text}
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
-              initialValue: _tipo,
+              value: _tipo,
               decoration: const InputDecoration(
                 labelText: 'Tipo de contenido',
                 prefixIcon: Icon(Icons.category),

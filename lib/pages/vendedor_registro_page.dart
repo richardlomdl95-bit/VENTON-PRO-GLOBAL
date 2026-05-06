@@ -83,7 +83,7 @@ Experiencia: ${_experiencia.text}
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
-              initialValue: _mercado,
+              value: _mercado,
               decoration: const InputDecoration(
                 labelText: 'País / Mercado',
                 prefixIcon: Icon(Icons.public),
