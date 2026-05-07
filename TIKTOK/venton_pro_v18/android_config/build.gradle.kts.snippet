@@ -1,0 +1,32 @@
+// VENTON PRO v2.1.8 - app/build.gradle.kts (snippet de referencia)
+
+android {
+    namespace = "com.ventonpro.app"
+    compileSdk = 34
+    ndkVersion = "27.0.12077973"
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17.toString()
+    }
+
+    defaultConfig {
+        applicationId = "com.ventonpro.app"
+        minSdk = 23
+        targetSdk = 34
+        versionCode = 6
+        versionName = "2.1.8"
+    }
+
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.getByName("debug")
+            isMinifyEnabled = false
+            isShrinkResources = false
+        }
+    }
+}

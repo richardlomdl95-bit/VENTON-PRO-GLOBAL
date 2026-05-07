@@ -37,8 +37,8 @@ android {
         applicationId = "com.ventonpro.app"
         minSdk = 23
         targetSdk = 34
-        versionCode = 5
-        versionName = "2.1.7"
+        versionCode = 6
+        versionName = "2.1.8"
     }
 
     buildTypes {
