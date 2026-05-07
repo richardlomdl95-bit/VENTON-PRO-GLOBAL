@@ -1,0 +1,35 @@
+// VENTON PRO v2.1.5 - app/build.gradle.kts (snippet de referencia)
+// Cascade debe ASEGURAR estos valores en el archivo real:
+
+android {
+    namespace = "com.ventonpro.app"
+    compileSdk = 34
+    ndkVersion = "27.0.12077973"
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17.toString()
+    }
+
+    defaultConfig {
+        applicationId = "com.ventonpro.app"
+        minSdk = 23
+        targetSdk = 34
+        versionCode = 3
+        versionName = "2.1.5"
+    }
+
+    buildTypes {
+        release {
+            // En OLA 1.5 firmamos con debug para que se pueda instalar en celulares de prueba.
+            // En OLA 3 (publicación Play Store) se reemplaza por keystore real.
+            signingConfig = signingConfigs.getByName("debug")
+            isMinifyEnabled = false
+            isShrinkResources = false
+        }
+    }
+}

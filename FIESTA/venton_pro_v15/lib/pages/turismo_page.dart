@@ -4,25 +4,25 @@ import '../core/venton_config.dart';
 import '../core/venton_helpers.dart';
 import '../core/widgets/boton_whatsapp.dart';
 
-class NegociosPage extends StatelessWidget {
-  const NegociosPage({super.key});
+class TurismoPage extends StatelessWidget {
+  const TurismoPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final negocios = MockData.negocios;
+    final experiencias = MockData.turismoSantaRosa;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Oportunidades de Negocio')),
+      appBar: AppBar(title: const Text('Turismo Santa Rosa')),
       floatingActionButton: const BotonWhatsapp(
         mensaje:
-            'Hola VENTON PRO, quiero información sobre las oportunidades de negocio.',
+            'Hola VENTON PRO, quiero información de los planes turísticos de Santa Rosa.',
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
-        itemCount: negocios.length,
+        itemCount: experiencias.length,
         itemBuilder: (context, i) {
-          final n = negocios[i];
+          final e = experiencias[i];
           return Padding(
             padding: const EdgeInsets.only(bottom: 16),
             child: Card(
@@ -36,14 +36,14 @@ class NegociosPage extends StatelessWidget {
                   AspectRatio(
                     aspectRatio: 16 / 9,
                     child: CachedNetworkImage(
-                      imageUrl: n.imagenUrl,
+                      imageUrl: e.imagenUrl,
                       fit: BoxFit.cover,
                       placeholder: (_, __) => Container(
                         color: theme.colorScheme.surfaceContainerHighest,
                       ),
                       errorWidget: (_, __, ___) => Container(
                         color: theme.colorScheme.surfaceContainerHighest,
-                        child: const Icon(Icons.business, size: 48),
+                        child: const Icon(Icons.image_not_supported, size: 48),
                       ),
                     ),
                   ),
@@ -52,35 +52,46 @@ class NegociosPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Text(e.titulo, style: theme.textTheme.titleLarge),
+                        const SizedBox(height: 4),
                         Row(
                           children: [
-                            Chip(
-                              label: Text(n.categoria),
-                              backgroundColor:
-                                  theme.colorScheme.primaryContainer,
-                              labelStyle: TextStyle(
-                                color: theme.colorScheme.onPrimaryContainer,
+                            Icon(
+                              Icons.location_on,
+                              size: 16,
+                              color: theme.colorScheme.primary,
+                            ),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                e.ubicacion,
+                                style: theme.textTheme.bodySmall,
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            Text(n.ciudad, style: theme.textTheme.bodySmall),
                           ],
                         ),
                         const SizedBox(height: 12),
-                        Text(n.nombre, style: theme.textTheme.titleLarge),
-                        const SizedBox(height: 8),
-                        Text(n.descripcion, style: theme.textTheme.bodyMedium),
+                        Text(e.descripcion, style: theme.textTheme.bodyMedium),
                         const SizedBox(height: 16),
-                        SizedBox(
-                          width: double.infinity,
-                          child: FilledButton.icon(
-                            onPressed: () => VentonHelpers.abrirWhatsApp(
-                              mensaje:
-                                  'Hola VENTON PRO, me interesa: ${n.nombre}.',
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              VentonHelpers.formatearPrecio(e.precio),
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                color: theme.colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                            icon: const Icon(Icons.chat),
-                            label: const Text('Quiero más información'),
-                          ),
+                            FilledButton.icon(
+                              onPressed: () => VentonHelpers.abrirWhatsApp(
+                                mensaje:
+                                    'Hola VENTON PRO, me interesa la experiencia: ${e.titulo}.',
+                              ),
+                              icon: const Icon(Icons.chat),
+                              label: const Text('Reservar'),
+                            ),
+                          ],
                         ),
                       ],
                     ),
