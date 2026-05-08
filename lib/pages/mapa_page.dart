@@ -81,6 +81,53 @@ class _MapaPageState extends State<MapaPage> {
     ),
   ];
 
+  List<NegocioMapa> _negociosFiltrados = [];
+    NegocioMapa(
+      id: '1',
+      nombre: 'VENTON PRO Santa Rosa',
+      descripcion: 'Tienda principal de productos VENTON',
+      direccion: 'Calle Principal #123, Santa Rosa, Colombia',
+      latitud: 4.8713,
+      longitud: -75.8875,
+      telefono: '+57 322 560 9121',
+      categoria: 'Tienda',
+      imagenUrl: 'https://via.placeholder.com/150/1A4D2E/FFFFFF?text=VENTON',
+    ),
+    NegocioMapa(
+      id: '2',
+      nombre: 'Café El Paraíso',
+      descripcion: 'Café especial y productos locales',
+      direccion: 'Avenida Central #456, Santa Rosa, Colombia',
+      latitud: 4.8723,
+      longitud: -75.8885,
+      telefono: '+57 311 234 5678',
+      categoria: 'Café',
+      imagenUrl: 'https://via.placeholder.com/150/8B4513/FFFFFF?text=CAFÉ',
+    ),
+    NegocioMapa(
+      id: '3',
+      nombre: 'Químicos Industriales',
+      descripcion: 'Productos químicos para industria',
+      direccion: 'Carrera 10 #789, Santa Rosa, Colombia',
+      latitud: 4.8703,
+      longitud: -75.8865,
+      telefono: '+57 300 987 6543',
+      categoria: 'Químicos',
+      imagenUrl: 'https://via.placeholder.com/150/4169E1/FFFFFF?text=QUÍMICOS',
+    ),
+    NegocioMapa(
+      id: '4',
+      nombre: 'Turismo Aventura',
+      descripcion: 'Tours y experiencias turísticas',
+      direccion: 'Plaza Principal #101, Santa Rosa, Colombia',
+      latitud: 4.8733,
+      longitud: -75.8895,
+      telefono: '+57 312 345 6789',
+      categoria: 'Turismo',
+      imagenUrl: 'https://via.placeholder.com/150/28A745/FFFFFF?text=TURISMO',
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,6 +145,40 @@ class _MapaPageState extends State<MapaPage> {
           icon: const Icon(Icons.arrow_back, color: AppTheme.bronce),
           onPressed: () => Navigator.pop(context),
         ),
+        actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.filter_list),
+            onSelected: (categoria) {
+              setState(() {
+                if (categoria != null) {
+                  _negociosFiltrados = _negocios.where((n) => n.categoria == categoria).toList();
+                } else {
+                  _negociosFiltrados = _negocios;
+                }
+              });
+            },
+            itemBuilder: (BuildContext context) {
+              return [
+                const PopupMenuItem<String>(
+                  value: null,
+                  child: Text('Todos'),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'Hoteles',
+                  child: Text('Hoteles'),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'Restaurantes',
+                  child: Text('Restaurantes'),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'Químicos',
+                  child: Text('Químicos'),
+                ),
+              ];
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -148,9 +229,9 @@ class _MapaPageState extends State<MapaPage> {
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
-              itemCount: _negocios.length,
+              itemCount: _negociosFiltrados.length,
               itemBuilder: (context, index) {
-                final negocio = _negocios[index];
+                final negocio = _negociosFiltrados[index];
                 return Container(
                   margin: const EdgeInsets.only(bottom: 12),
                   decoration: BoxDecoration(

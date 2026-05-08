@@ -53,6 +53,8 @@ class _InicioPageState extends State<InicioPage> {
       _segundosRestantesRuleta = segundos;
     });
 
+    _verificarPais();
+
     // Mostrar pop-up automático si puede jugar (UNA sola vez por sesión)
     if (puede) {
       WidgetsBinding.instance.addPostFrameCallback((_) {

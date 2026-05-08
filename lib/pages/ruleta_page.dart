@@ -104,31 +104,13 @@ class _RuletaPageState extends State<RuletaPage>
     _mostrarDialogoPremio(resultado);
   }
 
-  void _mostrarDialogoPremio(ResultadoRuleta r) {
-    final esGanador = r.premio.tipo != TipoPremio.sigueIntentando;
+  void _mostrarDialogoPremio(ResultadoRuleta resultado) {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        contentPadding: const EdgeInsets.all(24),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 90,
-              height: 90,
-              decoration: BoxDecoration(
-                gradient: esGanador
-                    ? AppTheme.gradienteBronce
-                    : LinearGradient(
-                        colors: [Colors.grey[300]!, Colors.grey[400]!],
-                      ),
-                shape: BoxShape.circle,
-                boxShadow: esGanador
-                    ? [
-                        BoxShadow(
-                          color: AppTheme.bronce.withOpacity(0.5),
+        contentPadding: EdgeInsets.zero,
+        content: _buildPremioDialog(resultado),
                           blurRadius: 20,
                           offset: const Offset(0, 6),
                         ),

@@ -58,11 +58,16 @@ class BotonesPublicacion extends StatelessWidget {
                   texto: 'Compartir',
                   color: AppTheme.bronce,
                   onTap: () {
-                    // TODO: Implementar compartir
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Función de compartir próximamente'),
-                      ),
+                    // Compartir app
+                    final text = '''
+Descarga VENTON PRO GLOBAL 🚀
+Publicidad, negocios, turismo y comunidad.
+👉 https://github.com/richardlomdl95-bit/VENTON-PRO-GLOBAL
+''';
+                    
+                    Share.share(
+                      text,
+                      subject: 'VENTON PRO GLOBAL - La mejor app para negocios',
                     );
                   },
                 ),
