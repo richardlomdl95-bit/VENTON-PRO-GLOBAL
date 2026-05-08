@@ -8,6 +8,7 @@ import '../core/widgets/acceso_rapido.dart';
 import '../core/widgets/banner_ad_slot.dart';
 import '../core/widgets/banner_rotativo.dart';
 import '../core/widgets/feed_reciente.dart';
+import '../core/widgets/pais_selector.dart';
 import '../core/widgets/seccion_ofertas.dart';
 import '../core/widgets/stories_widget.dart';
 import '../core/widgets/venton_logo.dart';
@@ -33,6 +34,7 @@ class _InicioPageState extends State<InicioPage> {
   int _segundosRestantesRuleta = 0;
   bool _puedeJugarRuleta = true;
   Timer? _timerCuenta;
+  String? _paisSeleccionado;
 
   @override
   void initState() {
@@ -148,6 +150,14 @@ class _InicioPageState extends State<InicioPage> {
                   ),
                 ),
                 const SizedBox(height: 8),
+                // Selector de país
+                PaisSelector(
+                  paisSeleccionado: _paisSeleccionado,
+                  onPaisChanged: (pais) {
+                    setState(() => _paisSeleccionado = pais);
+                  },
+                ),
+                const SizedBox(height: 8),
                 // Stories tipo Instagram
                 StoriesWidget(
                   stories: [
@@ -253,7 +263,7 @@ class _InicioPageState extends State<InicioPage> {
                   ],
                 ),
                 const SizedBox(height: 18),
-                // Card ruleta visible siempre
+                // Card ruleta solo para Colombia
                 _buildCardRuleta(),
                 const SizedBox(height: 18),
                 _seccionTitulo(context, 'Acceso rápido'),
@@ -331,6 +341,48 @@ class _InicioPageState extends State<InicioPage> {
   }
 
   Widget _buildCardRuleta() {
+    final esColombia = _paisSeleccionado == 'Colombia';
+    
+    if (!esColombia) {
+      return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey[300]!),
+        ),
+        child: Column(
+          children: [
+            Icon(
+              Icons.casino_rounded,
+              size: 48,
+              color: Colors.grey[600],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              '🎰 RULETA VENTON',
+              style: TextStyle(
+                color: Colors.grey[700],
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'La ruleta por ahora solo está disponible en Colombia.\nPróximamente en tu país.',
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Material(
