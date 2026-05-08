@@ -249,7 +249,7 @@ class _MapaPageState extends State<MapaPage> {
                             Expanded(
                               child: ElevatedButton.icon(
                                 onPressed: () => VentonHelpers.abrirWhatsApp(
-                                  numero: negocio.telefono,
+                                  numeroPersonalizado: negocio.telefono,
                                   mensaje: 'Hola, estoy interesado en tu negocio: ${negocio.nombre}',
                                 ),
                                 icon: const Icon(Icons.message, size: 16),
@@ -332,6 +332,6 @@ class _MapaPageState extends State<MapaPage> {
 
   void _abrirGoogleMaps(NegocioMapa negocio) {
     final url = 'https://www.google.com/maps/search/?api=1&query=${negocio.latitud},${negocio.longitud}';
-    VentonHelpers.abrirUrlExterna(url);
+    VentonHelpers.abrirUrl(url);
   }
 }
