@@ -224,7 +224,7 @@ class PlanesPage extends StatelessWidget {
           );
         },
         icon: const Icon(Icons.message_rounded),
-        label: 'Activar por WhatsApp',
+        label: const Text('Activar por WhatsApp'),
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF25D366),
           foregroundColor: Colors.white,

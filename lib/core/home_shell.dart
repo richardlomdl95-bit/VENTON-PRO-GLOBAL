@@ -78,7 +78,7 @@ class _HomeShellState extends State<HomeShell> {
         backgroundColor: const Color(0xFF25D366),
         foregroundColor: Colors.white,
         icon: const Icon(Icons.campaign_rounded),
-        label: 'Anunciar por WhatsApp',
+        label: const Text('Anunciar por WhatsApp'),
         extendedTextStyle: const TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 12,

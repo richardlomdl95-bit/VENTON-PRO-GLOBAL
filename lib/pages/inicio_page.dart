@@ -240,7 +240,7 @@ class _InicioPageState extends State<InicioPage> {
                       onTap: () => Navigator.pushNamed(context, '/comunidad'),
                     ),
                     BannerItem(
-                      titulo: '💼 Publicidad desde $20.000/mes',
+                      titulo: '💼 Publicidad desde \$20.000/mes',
                       subtitulo: 'Activa tu anuncio por WhatsApp',
                       icono: Icons.monetization_on_rounded,
                       gradiente: const LinearGradient(
