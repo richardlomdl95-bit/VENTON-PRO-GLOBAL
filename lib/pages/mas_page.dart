@@ -6,6 +6,7 @@ import '../core/widgets/venton_logo.dart';
 import 'cafe_page.dart';
 import 'comunidad_page.dart';
 import 'favoritos_page.dart';
+import 'planes_page.dart';
 import 'politica_page.dart';
 import 'quimicos_page.dart';
 import 'ruleta_page.dart';
@@ -93,6 +94,12 @@ class MasPage extends StatelessWidget {
                 icono: Icons.favorite_rounded,
                 titulo: 'Mis favoritos',
                 destino: const FavoritosPage(),
+              ),
+              _item(
+                context,
+                icono: Icons.workspace_premium_rounded,
+                titulo: 'Planes publicitarios',
+                destino: const PlanesPage(),
               ),
               _item(
                 context,

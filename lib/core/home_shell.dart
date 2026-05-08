@@ -4,6 +4,7 @@ import '../pages/inicio_page.dart';
 import '../pages/mas_page.dart';
 import '../pages/turismo_page.dart';
 import '../pages/vendedores_page.dart';
+import '../core/venton_helpers.dart';
 
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
@@ -67,6 +68,21 @@ class _HomeShellState extends State<HomeShell> {
             label: 'Más',
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          VentonHelpers.abrirWhatsApp(
+            mensaje: 'Hola, quiero anunciar mi negocio en VENTON PRO GLOBAL.\nQuiero información de los planes.',
+          );
+        },
+        backgroundColor: const Color(0xFF25D366),
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.campaign_rounded),
+        label: 'Anunciar por WhatsApp',
+        extendedTextStyle: const TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 12,
+        ),
       ),
     );
   }

@@ -9,6 +9,7 @@ import '../core/widgets/banner_ad_slot.dart';
 import '../core/widgets/banner_rotativo.dart';
 import '../core/widgets/feed_reciente.dart';
 import '../core/widgets/seccion_ofertas.dart';
+import '../core/widgets/stories_widget.dart';
 import '../core/widgets/venton_logo.dart';
 import 'buscar_page.dart';
 import 'cafe_page.dart';
@@ -105,55 +106,148 @@ class _InicioPageState extends State<InicioPage> {
           SliverToBoxAdapter(
             child: Column(
               children: [
+                // Franja superior con mensaje global
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF1A4D2E), Color(0xFF4F6F52)],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        '🌎 VENTON PRO GLOBAL',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.2,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Publicidad, negocios, turismo y comunidad en Colombia, Venezuela, España y Estados Unidos.',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                // Stories tipo Instagram
+                StoriesWidget(
+                  stories: [
+                    StoryItem(
+                      titulo: 'Publicar',
+                      icono: Icons.add_circle_rounded,
+                      onTap: () => Navigator.pushNamed(context, '/subir_contenido'),
+                    ),
+                    StoryItem(
+                      titulo: 'VENTON PRO',
+                      icono: Icons.workspace_premium_rounded,
+                      onTap: () => VentonHelpers.abrirWhatsApp(),
+                    ),
+                    StoryItem(
+                      titulo: 'Turismo',
+                      icono: Icons.terrain_rounded,
+                      onTap: () => Navigator.pushNamed(context, '/turismo'),
+                    ),
+                    StoryItem(
+                      titulo: 'Químicos',
+                      icono: Icons.science_rounded,
+                      onTap: () => Navigator.pushNamed(context, '/quimicos'),
+                    ),
+                    StoryItem(
+                      titulo: 'Café',
+                      icono: Icons.local_cafe_rounded,
+                      onTap: () => Navigator.pushNamed(context, '/cafe'),
+                    ),
+                    StoryItem(
+                      titulo: 'Negocios',
+                      icono: Icons.store_rounded,
+                      onTap: () => Navigator.pushNamed(context, '/vendedores'),
+                    ),
+                    StoryItem(
+                      titulo: 'Colombia',
+                      icono: Icons.flag_rounded,
+                      onTap: () => VentonHelpers.abrirWhatsApp(
+                        mensaje: 'Hola, quiero información sobre negocios en Colombia.',
+                      ),
+                    ),
+                    StoryItem(
+                      titulo: 'Venezuela',
+                      icono: Icons.flag_rounded,
+                      onTap: () => VentonHelpers.abrirWhatsApp(
+                        mensaje: 'Hola, quiero información sobre negocios en Venezuela.',
+                      ),
+                    ),
+                    StoryItem(
+                      titulo: 'España',
+                      icono: Icons.flag_rounded,
+                      onTap: () => VentonHelpers.abrirWhatsApp(
+                        mensaje: 'Hola, quiero información sobre negocios en España.',
+                      ),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 14),
-                // Banner rotativo
+                // Banner rotativo con mensajes comerciales y psicología de venta
                 BannerRotativo(
                   items: [
                     BannerItem(
-                      titulo: VentonConfig.slogan,
-                      subtitulo: 'Premium · Turismo · Oportunidades',
-                      icono: Icons.workspace_premium,
-                      onTap: () => VentonHelpers.abrirWhatsApp(),
+                      titulo: '📢 Publica tu negocio en VENTON PRO',
+                      subtitulo: 'Haz que te vean en más lugares',
+                      icono: Icons.campaign_rounded,
+                      gradiente: const LinearGradient(
+                        colors: [Color(0xFF25D366), Color(0xFF25A045)],
+                      ),
+                      onTap: () => VentonHelpers.abrirWhatsApp(
+                        mensaje: 'Hola, quiero publicar mi negocio en VENTON PRO.',
+                      ),
                     ),
                     BannerItem(
-                      titulo: 'Champú de Romero VENTON',
-                      subtitulo: 'Natural · Sin sal · Sin colorantes',
-                      icono: Icons.spa_rounded,
+                      titulo: '🌎 Colombia · Venezuela · España · Estados Unidos',
+                      subtitulo: 'Tu negocio puede crecer sin límites',
+                      icono: Icons.public_rounded,
                       gradiente: const LinearGradient(
                         colors: [Color(0xFF1A4D2E), Color(0xFF4F6F52)],
                       ),
                       onTap: () => VentonHelpers.abrirWhatsApp(
-                        mensaje:
-                            'Hola, quiero información del Champú de Romero VENTON.',
+                        mensaje: 'Hola, quiero información sobre negocios globales.',
                       ),
                     ),
                     BannerItem(
-                      titulo: '¿Tenés un negocio?',
-                      subtitulo: 'Anunciá en VENTON PRO desde \$20.000/mes',
-                      icono: Icons.campaign_rounded,
-                      gradiente: LinearGradient(
-                        colors: [
-                          AppTheme.bronceOscuro,
-                          AppTheme.bronce,
-                        ],
+                      titulo: '🔥 Mira gratis. Comparte fácil.',
+                      subtitulo: 'Cuando quieras crecer, anuncia con nosotros',
+                      icono: Icons.local_fire_department_rounded,
+                      gradiente: const LinearGradient(
+                        colors: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
+                      ),
+                      onTap: () => Navigator.pushNamed(context, '/comunidad'),
+                    ),
+                    BannerItem(
+                      titulo: '💼 Publicidad desde $20.000/mes',
+                      subtitulo: 'Activa tu anuncio por WhatsApp',
+                      icono: Icons.monetization_on_rounded,
+                      gradiente: const LinearGradient(
+                        colors: [Color(0xFFD4AF37), Color(0xFFFFC107)],
                       ),
                       onTap: () => VentonHelpers.abrirWhatsApp(
-                        mensaje:
-                            'Hola VENTON PRO, quiero anunciar mi negocio en la app.',
-                      ),
-                    ),
-                    BannerItem(
-                      titulo: 'Turismo en Eje Cafetero',
-                      subtitulo: 'Termales, café, naturaleza y aventura',
-                      icono: Icons.terrain_rounded,
-                      gradiente: const LinearGradient(
-                        colors: [Color(0xFF134E5E), Color(0xFF71B280)],
-                      ),
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const TurismoPage(),
-                        ),
+                        mensaje: 'Hola, quiero activar publicidad en VENTON PRO.',
                       ),
                     ),
                   ],
