@@ -111,78 +111,52 @@ class _RuletaPageState extends State<RuletaPage>
       builder: (ctx) => AlertDialog(
         contentPadding: EdgeInsets.zero,
         content: _buildPremioDialog(resultado),
-                          blurRadius: 20,
-                          offset: const Offset(0, 6),
-                        ),
-                      ]
-                    : null,
+      ),
+    );
+
+    // Auto-cerrar el modal después de 5 segundos
+    Timer(const Duration(seconds: 5), () {
+      if (mounted) {
+        Navigator.pop(context);
+      }
+    });
+  }
+
+  Widget _buildPremioDialog(ResultadoRuleta resultado) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: AppTheme.azulMarino.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
               ),
-              child: Icon(
-                esGanador ? r.premio.icono : Icons.sentiment_neutral_rounded,
+            ],
+          ),
+          child: Column(
+            children: [
+              Icon(
+                resultado.premio.tipo == TipoPremio.descuento
+                    ? Icons.sentiment_neutral_rounded
+                    : resultado.premio.icono,
                 color: Colors.white,
                 size: 50,
               ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              esGanador ? '¡Felicidades!' : '¡Casi!',
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w900,
-                color: AppTheme.azulMarino,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              r.premio.nombre,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: r.premio.color,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              r.premio.descripcion,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 13,
-                color: AppTheme.azulMarino,
-                height: 1.4,
-              ),
-            ),
-            if (esGanador) ...[
-              const SizedBox(height: 18),
-              Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: AppTheme.bronce.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: AppTheme.bronce.withOpacity(0.4),
-                    width: 1.5,
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    const Text(
-                      'CÓDIGO DE CANJE ÚNICO',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: AppTheme.bronceOscuro,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    SelectableText(
-                      r.codigoUnico,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w900,
-                        color: AppTheme.azulMarino,
-                        letterSpacing: 2,
+              const SizedBox(height: 16),
+              Text(
+                resultado.premio.tipo == TipoPremio.descuento
+                    ? '¡Casi!'
+                    : '¡Felicidades!',
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w900,
+                  color: AppTheme.azulMarino,
                         fontFamily: 'monospace',
                       ),
                     ),
@@ -451,12 +425,25 @@ class _RuletaPageState extends State<RuletaPage>
                       ),
                     ),
                     const SizedBox(height: 6),
-                    Text(
-                      _formatearTiempo(_segundosRestantes),
-                      style: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w900,
-                        color: AppTheme.azulMarino,
+                    GestureDetector(
+                      onTap: () {
+                        Clipboard.setData(ClipboardData(text: _formatearTiempo(_segundosRestantes)));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Código copiado'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        _formatearTiempo(_segundosRestantes),
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w900,
+                          color: AppTheme.azulMarino,
+                          letterSpacing: 2,
+                          fontFamily: 'monospace',
+                        ),
                         fontFamily: 'monospace',
                         letterSpacing: 2,
                       ),
