@@ -4,6 +4,7 @@ import '../core/theme.dart';
 import '../core/venton_config.dart';
 import '../core/venton_helpers.dart';
 import 'experiencia_detalle_page.dart';
+import 'turismo_mapa_page.dart';
 
 class TurismoPage extends StatelessWidget {
   const TurismoPage({super.key});
@@ -14,7 +15,23 @@ class TurismoPage extends StatelessWidget {
     final experiencias = MockData.turismoSantaRosa;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Turismo')),
+      appBar: AppBar(
+        title: const Text('Turismo'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.map),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const TurismoMapaPage(),
+                ),
+              );
+            },
+            tooltip: 'Ver mapa de hoteles',
+          ),
+        ],
+      ),
       body: ListView.builder(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
         itemCount: experiencias.length,

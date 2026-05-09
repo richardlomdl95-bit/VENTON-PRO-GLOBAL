@@ -39,6 +39,10 @@
         </intent>
     </queries>
 
+    <!-- Location permissions for map functionality -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
     <application
         android:label="VENTON PRO"
         android:name="${applicationName}"
