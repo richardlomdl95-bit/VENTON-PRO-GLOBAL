@@ -53,8 +53,6 @@ class _InicioPageState extends State<InicioPage> {
       _segundosRestantesRuleta = segundos;
     });
 
-    _verificarPais();
-
     // Mostrar pop-up automático si puede jugar (UNA sola vez por sesión)
     if (puede) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -86,7 +84,7 @@ class _InicioPageState extends State<InicioPage> {
   void _mostrarPopupRuleta() {
     showDialog(
       context: context,
-      builder: (_) => const RuletaPage(modoPopUp: true),
+      builder: (_) => const RuletaPage(),
     ).then((_) => _verificarRuleta());
   }
 
