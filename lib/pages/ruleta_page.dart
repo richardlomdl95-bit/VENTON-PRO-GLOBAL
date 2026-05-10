@@ -123,8 +123,8 @@ class _RuletaPageState extends State<RuletaPage>
     Timer(const Duration(seconds: 3), () {
       if (mounted) {
         Navigator.of(context).pop(); // Cerrar ruleta
-        // Abrir mapa automáticamente después de 3 segundos
-        Navigator.of(context).pushReplacement(
+        // Abrir mapa automáticamente después de 3 segundos sin bloquear navegación
+        Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => const MapaPage(),
           ),
@@ -229,164 +229,176 @@ class _RuletaPageState extends State<RuletaPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: _negro,
-      appBar: AppBar(
+    return WillPopScope(
+      onWillPop: () async {
+        // Permitir navegación hacia atrás con botón físico
+        return true;
+      },
+      child: Scaffold(
         backgroundColor: _negro,
-        title: const Text(
-          'Ruleta VENTON',
-          style: TextStyle(
-            color: _dorado,
-            fontWeight: FontWeight.bold,
+        appBar: AppBar(
+          backgroundColor: _negro,
+          title: const Text(
+            'Ruleta VENTON',
+            style: TextStyle(
+              color: _dorado,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          centerTitle: true,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: _dorado),
+            onPressed: () {
+              Navigator.pop(context); // Flecha atrás funcional
+            },
           ),
         ),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Jugada #$_contadorGlobal',
-              style: const TextStyle(
-                color: Colors.white70,
-                fontSize:16,
-                fontWeight: FontWeight.bold,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Jugada #$_contadorGlobal',
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize:16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: 280,
-              height: 280,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    width: 280,
-                    height: 280,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: _dorado, width: 4),
-                      boxShadow: [
-                        BoxShadow(
-                          color: _dorado.withOpacity(0.3),
-                          blurRadius: 20,
-                          spreadRadius: 2,
-                        ),
-                      ],
-                    ),
-                  ),
-                  AnimatedBuilder(
-                    animation: _spinAnimation,
-                    builder: (_, __) {
-                      return Transform.rotate(
-                        angle: _spinAnimation.value,
-                        child: CustomPaint(
-                          size: const Size(260, 260),
-                          painter: RuletaPainter(
-                            colores: [
-                              _dorado,
-                              _gris,
-                              _dorado,
-                              _gris,
-                              _dorado,
-                              _gris,
-                              _dorado,
-                              _gris,
-                            ],
-                            textos: _premios,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: _negro,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: _dorado, width: 3),
-                      boxShadow: [
-                        BoxShadow(
-                          color: _dorado.withOpacity(0.5),
-                          blurRadius: 10,
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.star,
-                      color: _dorado,
-                      size: 30,
-                    ),
-                  ),
-                  Positioned(
-                    top: -10,
-                    child: Container(
-                      width: 0,
-                      height: 0,
-                      decoration: const BoxDecoration(
-                        color: Colors.red,
+              const SizedBox(height: 20),
+              SizedBox(
+                width: 280,
+                height: 280,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Container(
+                      width: 280,
+                      height: 280,
+                      decoration: BoxDecoration(
                         shape: BoxShape.circle,
+                        border: Border.all(color: _dorado, width: 4),
+                        boxShadow: [
+                          BoxShadow(
+                            color: _dorado.withOpacity(0.3),
+                            blurRadius: 20,
+                            spreadRadius: 2,
+                          ),
+                        ],
+                      ),
+                    ),
+                    AnimatedBuilder(
+                      animation: _spinAnimation,
+                      builder: (_, __) {
+                        return Transform.rotate(
+                          angle: _spinAnimation.value,
+                          child: CustomPaint(
+                            size: const Size(260, 260),
+                            painter: RuletaPainter(
+                              colores: [
+                                _dorado,
+                                _gris,
+                                _dorado,
+                                _gris,
+                                _dorado,
+                                _gris,
+                                _dorado,
+                                _gris,
+                              ],
+                              textos: _premios,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: _negro,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: _dorado, width: 3),
+                        boxShadow: [
+                          BoxShadow(
+                            color: _dorado.withOpacity(0.5),
+                            blurRadius: 10,
+                          ),
+                        ],
                       ),
                       child: const Icon(
-                        Icons.arrow_drop_down,
-                        color: Colors.red,
-                        size: 40,
+                        Icons.star,
+                        color: _dorado,
+                        size: 30,
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 40),
-            Container(
-              width: 200,
-              height: 60,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [_dorado, _dorado.withOpacity(0.8)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                    Positioned(
+                      top: -10,
+                      child: Container(
+                        width: 0,
+                        height: 0,
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.arrow_drop_down,
+                          color: Colors.red,
+                          size: 40,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                borderRadius: BorderRadius.circular(30),
-                boxShadow: [
-                  BoxShadow(
-                    color: _dorado.withOpacity(0.4),
-                    blurRadius: 15,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
               ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: _girando ? null : _girarRuleta,
+              const SizedBox(height: 40),
+              Container(
+                width: 200,
+                height: 60,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [_dorado, _dorado.withOpacity(0.8)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                   borderRadius: BorderRadius.circular(30),
-                  child: const Center(
-                    child: Text(
-                      'GIRAR RULETA',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
+                  boxShadow: [
+                    BoxShadow(
+                      color: _dorado.withOpacity(0.4),
+                      blurRadius: 15,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: _girando ? null : _girarRuleta,
+                    borderRadius: BorderRadius.circular(30),
+                    child: const Center(
+                      child: Text(
+                        'GIRAR RULETA',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Toca para girar y ganar premios',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.7),
-                fontSize: 14,
+              const SizedBox(height: 20),
+              Text(
+                'Toca para girar y ganar premios',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.7),
+                  fontSize: 14,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
