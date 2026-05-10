@@ -115,6 +115,9 @@ class _RuletaPageState extends State<RuletaPage>
       _girando = false;
     });
 
+    // Resetear el controlador para próximos giros
+    _spinController.reset();
+
     HapticFeedback.mediumImpact();
 
     _mostrarResultado();
@@ -446,24 +449,46 @@ class RuletaPainter extends CustomPainter {
         borderPaint,
       );
 
+      // Texto optimizado para evitar overlapping
+      String texto = textos[i];
+      
+      // Abreviaciones para textos largos
+      if (texto == 'SIGUE INTENTANDO') {
+        texto = 'SIGUE\nINTENT';
+      } else if (texto == '10% DESCUENTO') {
+        texto = '10%\nDTO';
+      } else if (texto == '5% DESCUENTO') {
+        texto = '5%\nDTO';
+      } else if (texto == '15% DESCUENTO') {
+        texto = '15%\nDTO';
+      } else if (texto == '20% DESCUENTO') {
+        texto = '20%\nDTO';
+      } else if (texto == 'ENVÍO GRATIS') {
+        texto = 'ENVÍO\nGRATIS';
+      }
+
       final textPainter = TextPainter(
         text: TextSpan(
-          text: textos[i],
+          text: texto,
           style: const TextStyle(
             color: Colors.black,
-            fontSize: 12,
+            fontSize: 8,
             fontWeight: FontWeight.bold,
+            height: 1.1,
           ),
         ),
         textDirection: TextDirection.ltr,
+        textAlign: TextAlign.center,
       );
 
       final textAngle = startAngle + anglePerSegment / 2;
-      final textRadius = radius * 0.7;
+      final textRadius = radius * 0.7; // Ajustado para mejor visibilidad
       final textX = center.dx + textRadius * cos(textAngle);
       final textY = center.dy + textRadius * sin(textAngle);
 
-      textPainter.layout();
+      textPainter.layout(maxWidth: radius * 0.3); // Más estricto para evitar overlap
+      
+      // Dibujar texto con padding adicional
       textPainter.paint(
         canvas,
         Offset(
