@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'mapa_page.dart';
 
 class RuletaPage extends StatefulWidget {
   const RuletaPage({super.key});
@@ -86,12 +87,15 @@ class _RuletaPageState extends State<RuletaPage>
     final vueltas = 5;
     int premioAleatorio;
     
+    // Lógica 1/100 REAL: Solo el usuario #100 gana, el resto siempre pierde
     if (_contadorGlobal == 100) {
-      premioAleatorio = 0; // 10% DESCUENTO
+      premioAleatorio = 0; // 10% DESCUENTO - GANADOR REAL
     } else if (_contadorGlobal == 200) {
-      premioAleatorio = 1; // ENVÍO GRATIS
+      premioAleatorio = 1; // ENVÍO GRATIS - GANADOR REAL  
     } else {
-      premioAleatorio = Random().nextInt(_premios.length);
+      // 99% de usuarios SIEMPRE obtienen "SIGUE INTENTANDO"
+      final indicesPerdedores = [3, 5, 7]; // Posiciones de "SIGUE INTENTANDO"
+      premioAleatorio = indicesPerdedores[Random().nextInt(indicesPerdedores.length)];
     }
 
     final anguloFinal = (vueltas * 2 * pi) + (premioAleatorio * 2 * pi / _premios.length);
@@ -115,9 +119,16 @@ class _RuletaPageState extends State<RuletaPage>
 
     _mostrarResultado();
 
+    // NAVEGACIÓN AUTOMÁTICA AL MAPA CRUCIAL
     Timer(const Duration(seconds: 3), () {
       if (mounted) {
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(); // Cerrar ruleta
+        // Abrir mapa automáticamente después de 3 segundos
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (_) => const MapaPage(),
+          ),
+        );
       }
     });
   }
