@@ -15,11 +15,21 @@ class TurismoPage extends StatelessWidget {
     final experiencias = MockData.turismoSantaRosa;
 
     return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
       appBar: AppBar(
-        title: const Text('Turismo'),
+        backgroundColor: const Color(0xFF0A0A0A),
+        title: const Text(
+          'Turismo',
+          style: TextStyle(
+            color: Color(0xFFD4AF37),
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.2,
+          ),
+        ),
+        iconTheme: const IconThemeData(color: Color(0xFFD4AF37)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.map),
+            icon: const Icon(Icons.map, color: Color(0xFFD4AF37)),
             onPressed: () {
               Navigator.push(
                 context,
@@ -31,6 +41,7 @@ class TurismoPage extends StatelessWidget {
             tooltip: 'Ver mapa de hoteles',
           ),
         ],
+        elevation: 0,
       ),
       body: ListView.builder(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),

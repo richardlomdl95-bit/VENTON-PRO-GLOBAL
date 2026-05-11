@@ -246,6 +246,7 @@ class _RuletaPageState extends State<RuletaPage>
             style: TextStyle(
               color: _dorado,
               fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
             ),
           ),
           centerTitle: true,

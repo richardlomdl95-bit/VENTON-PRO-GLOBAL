@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'home_shell.dart';
+import '../pages/inicio_page.dart';
 import 'theme.dart';
 import 'widgets/venton_logo.dart';
 
 /// Pantalla de bienvenida con el logo VENTON PRO.
-/// Se muestra ~2 segundos al abrir la app y hace fade al HomeShell.
+/// Se muestra ~2 segundos al abrir la app y hace fade a InicioPage.
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -39,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen>
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         transitionDuration: const Duration(milliseconds: 600),
-        pageBuilder: (_, __, ___) => const HomeShell(),
+        pageBuilder: (_, __, ___) => const InicioPage(),
         transitionsBuilder: (_, animation, __, child) {
           return FadeTransition(opacity: animation, child: child);
         },

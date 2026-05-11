@@ -11,12 +11,22 @@ class VendedoresPage extends StatelessWidget {
     final vendedores = MockData.vendedoresDestacados;
 
     return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
       appBar: AppBar(
-        title: const Text('Vendedores'),
+        backgroundColor: const Color(0xFF0A0A0A),
+        title: const Text(
+          'Vendedores',
+          style: TextStyle(
+            color: Color(0xFFD4AF37),
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.2,
+          ),
+        ),
+        iconTheme: const IconThemeData(color: Color(0xFFD4AF37)),
         actions: [
           IconButton(
             tooltip: 'Ser vendedor',
-            icon: const Icon(Icons.person_add),
+            icon: const Icon(Icons.person_add, color: Color(0xFFD4AF37)),
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(
@@ -25,6 +35,7 @@ class VendedoresPage extends StatelessWidget {
             ),
           ),
         ],
+        elevation: 0,
       ),
       body: ListView.separated(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),

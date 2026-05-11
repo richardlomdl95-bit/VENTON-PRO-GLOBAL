@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import '../core/venton_config.dart';
-import 'widgets/_grilla_productos.dart';
 
-class QuimicosPage extends StatelessWidget {
-  const QuimicosPage({super.key});
+class NegociosPage extends StatelessWidget {
+  const NegociosPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +11,7 @@ class QuimicosPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color(0xFF0A0A0A),
         title: const Text(
-          'Químicos Premium',
+          'Negocios',
           style: TextStyle(
             color: Color(0xFFD4AF37),
             fontWeight: FontWeight.bold,
@@ -22,7 +21,20 @@ class QuimicosPage extends StatelessWidget {
         iconTheme: const IconThemeData(color: Color(0xFFD4AF37)),
         elevation: 0,
       ),
-      body: GrillaProductos(productos: MockData.quimicosPremium),
+      body: const Center(
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: Text(
+            'Directorio de negocios locales\nPróximamente disponible',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white70,
+              fontSize: 16,
+              height: 1.5,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
