@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'turismo_page.dart';
 import 'turismo_mapa_page.dart';
-import 'negocios_page.dart';
-import 'vendedores_page.dart';
+import 'comunidad_page.dart';
+import 'mas_page.dart';
+import 'subir_contenido_page.dart';
 import 'quimicos_page.dart';
 import 'ruleta_page.dart';
-import 'subir_contenido_page.dart';
 import 'politica_page.dart';
 import 'terminos_page.dart';
 
@@ -20,7 +20,6 @@ class InicioPage extends StatefulWidget {
 class _InicioPageState extends State<InicioPage> {
   int _indice = 0;
   String _paisSeleccionado = 'Selecciona un país';
-  int _carruselIndex = 1;
 
   static const Color _crema = Color(0xFFFFF8E7);
   static const Color _azulOscuro = Color(0xFF0F1B3D);
@@ -30,7 +29,7 @@ class _InicioPageState extends State<InicioPage> {
   static const Color _negro = Color(0xFF0A0A0A);
   static const Color _grafito = Color(0xFF1A1A1A);
 
-  final List<String> _paises = [
+  final List<String> _paises = const [
     'Selecciona un país',
     'Colombia',
     'Venezuela',
@@ -41,9 +40,9 @@ class _InicioPageState extends State<InicioPage> {
   late final List<Widget> _paginas = [
     _construirHome(),
     const TurismoPage(),
-    const NegociosPage(),
-    const VendedoresPage(),
-    const RuletaPage(),
+    const SizedBox.shrink(),
+    const ComunidadPage(),
+    const MasPage(),
   ];
 
   Future<void> _abrirWhatsApp() async {
@@ -59,34 +58,90 @@ class _InicioPageState extends State<InicioPage> {
     }
   }
 
+  void _abrirSubir() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const SubirContenidoPage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _negro,
       body: IndexedStack(index: _indice, children: _paginas),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: _grafito,
-          border: Border(top: BorderSide(color: _dorado, width: 0.5)),
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _indice,
-          onTap: (i) => setState(() => _indice = i),
-          backgroundColor: _grafito,
-          selectedItemColor: _dorado,
-          unselectedItemColor: Colors.white54,
-          type: BottomNavigationBarType.fixed,
-          elevation: 0,
-          selectedLabelStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
-          unselectedLabelStyle: const TextStyle(fontSize: 10),
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: 'Inicio'),
-            BottomNavigationBarItem(icon: Icon(Icons.travel_explore_rounded), label: 'Turismo'),
-            BottomNavigationBarItem(icon: Icon(Icons.store_mall_directory_rounded), label: 'Negocios'),
-            BottomNavigationBarItem(icon: Icon(Icons.handshake_rounded), label: 'Vendedores'),
-            BottomNavigationBarItem(icon: Icon(Icons.casino_rounded), label: 'Ruleta'),
+      bottomNavigationBar: _construirBottomNav(),
+    );
+  }
+
+  Widget _construirBottomNav() {
+    return Container(
+      decoration: const BoxDecoration(
+        color: _grafito,
+        border: Border(top: BorderSide(color: _dorado, width: 0.5)),
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _tabItem(0, Icons.home_rounded, 'Inicio'),
+          _tabItem(1, Icons.travel_explore_rounded, 'Turismo'),
+          _tabSubir(),
+          _tabItem(3, Icons.groups_rounded, 'Comunidad'),
+          _tabItem(4, Icons.apps_rounded, 'Más'),
+        ],
+      ),
+    );
+  }
+
+  Widget _tabItem(int idx, IconData icon, String label) {
+    final activo = _indice == idx;
+    return GestureDetector(
+      onTap: () => setState(() => _indice = idx),
+      behavior: HitTestBehavior.opaque,
+      child: SizedBox(
+        width: 64,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: activo ? _dorado : Colors.white54, size: 24),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                color: activo ? _dorado : Colors.white54,
+                fontSize: 11,
+                fontWeight: activo ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _tabSubir() {
+    return GestureDetector(
+      onTap: _abrirSubir,
+      child: Container(
+        width: 56,
+        height: 56,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFFE8C547), _dorado],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: _dorado.withOpacity(0.4),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: const Icon(Icons.add, color: Colors.white, size: 32),
       ),
     );
   }
@@ -121,7 +176,7 @@ class _InicioPageState extends State<InicioPage> {
               _construirTarjetaRuleta(),
               const SizedBox(height: 12),
               _construirFooterLegal(),
-              const SizedBox(height: 90),
+              const SizedBox(height: 110),
             ],
           ),
         ),
@@ -203,14 +258,10 @@ class _InicioPageState extends State<InicioPage> {
   }
 
   Widget _construirStories() {
-    final stories = [
-      {'icon': Icons.add_circle, 'label': 'Publicar', 'onTap': () {
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const SubirContenidoPage()));
-      }},
+    final stories = <Map<String, dynamic>>[
+      {'icon': Icons.add_circle, 'label': 'Publicar', 'onTap': _abrirSubir},
       {'icon': Icons.workspace_premium, 'label': 'VENTON PRO', 'onTap': () {}},
-      {'icon': Icons.landscape, 'label': 'Turismo', 'onTap': () {
-        setState(() => _indice = 1);
-      }},
+      {'icon': Icons.landscape, 'label': 'Turismo', 'onTap': () => setState(() => _indice = 1)},
       {'icon': Icons.science, 'label': 'Químicos', 'onTap': () {
         Navigator.push(context, MaterialPageRoute(builder: (_) => const QuimicosPage()));
       }},
@@ -337,7 +388,9 @@ class _InicioPageState extends State<InicioPage> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () => setState(() => _indice = 4),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const RuletaPage()));
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: _dorado,
                 padding: const EdgeInsets.symmetric(vertical: 12),
