@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'mapa_page.dart';
+import 'turismo_mapa_page.dart';
 
 class RuletaPage extends StatefulWidget {
   const RuletaPage({super.key});
@@ -129,7 +129,7 @@ class _RuletaPageState extends State<RuletaPage>
         // Abrir mapa automáticamente después de 3 segundos sin bloquear navegación
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => const MapaPage(),
+            builder: (_) => const TurismoMapaPage(),
           ),
         );
       }
