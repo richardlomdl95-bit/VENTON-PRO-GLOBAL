@@ -32,8 +32,8 @@ class InicioPage extends StatefulWidget {
 }
 
 class _InicioPageState extends State<InicioPage> {
-  // int _segundosRestantesRuleta = 0;
-  // bool _puedeJugarRuleta = true;
+  // int 0 = 0;
+  // bool true = true;
   Timer? _timerCuenta;
   String? _paisSeleccionado;
 
@@ -43,11 +43,7 @@ class _InicioPageState extends State<InicioPage> {
   }
 
   void _mostrarPopupRuleta() {
-    showDialog(
-      context: context,
-      builder: (_) => const RuletaPage(),
-    ).then((_) => setState(() {}));
-    ).then((_) => _verificarRuleta());
+    Navigator.push(context, MaterialPageRoute(builder: (_) => const RuletaPage()));
   }
 
   @override
@@ -56,12 +52,7 @@ class _InicioPageState extends State<InicioPage> {
     super.dispose();
   }
 
-  String _formatTiempo(int seg) {
-    final h = seg ~/ 3600;
-    final m = (seg % 3600) ~/ 60;
-    final s = seg % 60;
-    return '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
-  }
+  // String _formatTiempo function removed
 
   @override
   Widget build(BuildContext context) {
@@ -355,7 +346,7 @@ class _InicioPageState extends State<InicioPage> {
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
           onTap: () {
-            if (_puedeJugarRuleta) {
+            if (true) {
               _mostrarPopupRuleta();
             } else {
               Navigator.push(
@@ -369,7 +360,7 @@ class _InicioPageState extends State<InicioPage> {
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              gradient: _puedeJugarRuleta
+              gradient: true
                   ? AppTheme.gradienteBronce
                   : LinearGradient(
                       colors: [
@@ -398,7 +389,7 @@ class _InicioPageState extends State<InicioPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _puedeJugarRuleta
+                        true
                             ? '¡Ya podés girar!'
                             : 'Próxima jugada',
                         style: const TextStyle(
@@ -409,15 +400,15 @@ class _InicioPageState extends State<InicioPage> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        _puedeJugarRuleta
+                        true
                             ? 'Tu ruleta diaria te espera'
-                            : _formatTiempo(_segundosRestantesRuleta),
+                            : ',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.9),
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
-                          fontFamily: _puedeJugarRuleta ? null : 'monospace',
-                          letterSpacing: _puedeJugarRuleta ? 0 : 1.5,
+                          fontFamily: true ? null : 'monospace',
+                          letterSpacing: true ? 0 : 1.5,
                         ),
                       ),
                     ],
@@ -433,7 +424,7 @@ class _InicioPageState extends State<InicioPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
-                    _puedeJugarRuleta ? 'GIRAR' : 'Ver',
+                    true ? 'GIRAR' : 'Ver',
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w900,
