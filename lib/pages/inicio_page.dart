@@ -20,6 +20,7 @@ import 'producto_detalle_page.dart';
 import 'quimicos_page.dart';
 import 'ruleta_page.dart';
 import 'subir_contenido_page.dart';
+import 'turismo_mapa_page.dart';
 import 'turismo_page.dart';
 import 'vendedor_registro_page.dart';
 
@@ -31,58 +32,21 @@ class InicioPage extends StatefulWidget {
 }
 
 class _InicioPageState extends State<InicioPage> {
-  int _segundosRestantesRuleta = 0;
-  bool _puedeJugarRuleta = true;
+  // int _segundosRestantesRuleta = 0;
+  // bool _puedeJugarRuleta = true;
   Timer? _timerCuenta;
   String? _paisSeleccionado;
 
   @override
   void initState() {
     super.initState();
-    _verificarRuleta();
-  }
-
-  Future<void> _verificarRuleta() async {
-    final puede = await RuletaService.instance.puedeJugar();
-    final segundos = await RuletaService.instance.segundosHastaProximaJugada();
-    if (!mounted) return;
-    setState(() {
-      _puedeJugarRuleta = puede;
-      _segundosRestantesRuleta = segundos;
-    });
-
-    // Mostrar pop-up automático si puede jugar (UNA sola vez por sesión)
-    if (puede) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        _mostrarPopupRuleta();
-      });
-    } else {
-      _arrancarTimer();
-    }
-  }
-
-  void _arrancarTimer() {
-    _timerCuenta?.cancel();
-    _timerCuenta = Timer.periodic(const Duration(seconds: 1), (t) {
-      if (!mounted) {
-        t.cancel();
-        return;
-      }
-      setState(() {
-        _segundosRestantesRuleta--;
-        if (_segundosRestantesRuleta <= 0) {
-          _puedeJugarRuleta = true;
-          t.cancel();
-        }
-      });
-    });
   }
 
   void _mostrarPopupRuleta() {
     showDialog(
       context: context,
       builder: (_) => const RuletaPage(),
+    ).then((_) => setState(() {}));
     ).then((_) => _verificarRuleta());
   }
 
@@ -710,7 +674,7 @@ class _InicioPageState extends State<InicioPage> {
           borderRadius: BorderRadius.circular(16),
           onTap: () => Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const MapaPage()),
+            MaterialPageRoute(builder: (_) => const TurismoMapaPage()),
           ),
           child: Padding(
             padding: const EdgeInsets.all(16),
