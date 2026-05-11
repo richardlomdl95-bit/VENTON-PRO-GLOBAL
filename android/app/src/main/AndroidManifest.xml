@@ -1,45 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Internet (WhatsApp, imágenes remotas) -->
     <uses-permission android:name="android.permission.INTERNET"/>
-
-    <!-- Cámara para tomar foto/video -->
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-feature android:name="android.hardware.camera" android:required="false"/>
-
-    <!-- Audio para grabar video con sonido -->
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-
-    <!-- Galería: nuevo permiso granular Android 13+ y compatibilidad antiguo -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
-    <uses-permission
-        android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32"/>
-
-    <!-- Queries para abrir WhatsApp y otras apps externas (Android 11+) -->
-    <queries>
-        <intent>
-            <action android:name="android.intent.action.VIEW"/>
-            <data android:scheme="https"/>
-        </intent>
-        <intent>
-            <action android:name="android.intent.action.VIEW"/>
-            <data android:scheme="tel"/>
-        </intent>
-        <intent>
-            <action android:name="android.media.action.IMAGE_CAPTURE"/>
-        </intent>
-        <intent>
-            <action android:name="android.media.action.VIDEO_CAPTURE"/>
-        </intent>
-        <intent>
-            <action android:name="android.intent.action.GET_CONTENT"/>
-            <data android:mimeType="*/*"/>
-        </intent>
-    </queries>
-
-    <!-- Location permissions for map functionality -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
@@ -69,5 +30,9 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- Google AdMob Application ID -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713"/>
     </application>
 </manifest>
