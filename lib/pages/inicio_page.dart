@@ -1,28 +1,14 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:share_plus/share_plus.dart';
-import '../core/ruleta_service.dart';
-import '../core/theme.dart';
-import '../core/venton_config.dart';
-import '../core/venton_helpers.dart';
-import '../core/widgets/acceso_rapido.dart';
-import '../core/widgets/banner_ad_slot.dart';
-import '../core/widgets/banner_rotativo.dart';
-import '../core/widgets/feed_reciente.dart';
-import '../core/widgets/pais_selector.dart';
-import '../core/widgets/seccion_ofertas.dart';
-import '../core/widgets/stories_widget.dart';
-import '../core/widgets/venton_logo.dart';
-import 'buscar_page.dart';
-import 'experiencia_detalle_page.dart';
-import 'favoritos_page.dart';
-import 'producto_detalle_page.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'turismo_page.dart';
+import 'turismo_mapa_page.dart';
+import 'negocios_page.dart';
+import 'vendedores_page.dart';
 import 'quimicos_page.dart';
 import 'ruleta_page.dart';
 import 'subir_contenido_page.dart';
-import 'turismo_mapa_page.dart';
-import 'turismo_page.dart';
-import 'vendedor_registro_page.dart';
+import 'politica_page.dart';
+import 'terminos_page.dart';
 
 class InicioPage extends StatefulWidget {
   const InicioPage({super.key});
@@ -32,502 +18,110 @@ class InicioPage extends StatefulWidget {
 }
 
 class _InicioPageState extends State<InicioPage> {
-  // int 0 = 0;
-  // bool true = true;
-  Timer? _timerCuenta;
-  String? _paisSeleccionado;
+  int _indice = 0;
+  String _paisSeleccionado = 'Selecciona un país';
+  int _carruselIndex = 1;
 
-  @override
-  void initState() {
-    super.initState();
+  static const Color _crema = Color(0xFFFFF8E7);
+  static const Color _azulOscuro = Color(0xFF0F1B3D);
+  static const Color _dorado = Color(0xFFD4AF37);
+  static const Color _naranja = Color(0xFFFF6B35);
+  static const Color _verde = Color(0xFF25D366);
+  static const Color _negro = Color(0xFF0A0A0A);
+  static const Color _grafito = Color(0xFF1A1A1A);
+
+  final List<String> _paises = [
+    'Selecciona un país',
+    'Colombia',
+    'Venezuela',
+    'España',
+    'Estados Unidos',
+  ];
+
+  late final List<Widget> _paginas = [
+    _construirHome(),
+    const TurismoPage(),
+    const NegociosPage(),
+    const VendedoresPage(),
+    const RuletaPage(),
+  ];
+
+  Future<void> _abrirWhatsApp() async {
+    final url = Uri.parse(
+      'https://wa.me/573225609121?text=Hola%20quiero%20anunciar%20en%20VENTON%20PRO',
+    );
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No se pudo abrir WhatsApp')),
+        );
+      }
+    }
   }
-
-  void _mostrarPopupRuleta() {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => const RuletaPage()));
-  }
-
-  @override
-  void dispose() {
-    _timerCuenta?.cancel();
-    super.dispose();
-  }
-
-  // String _formatTiempo function removed
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A1A),
+      backgroundColor: _negro,
+      body: IndexedStack(index: _indice, children: _paginas),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
-          color: Color(0xFF1A1A1A),
-          border: Border(top: BorderSide(color: Color(0xFFD4AF37), width: 0.5)),
+          color: _grafito,
+          border: Border(top: BorderSide(color: _dorado, width: 0.5)),
         ),
         child: BottomNavigationBar(
           currentIndex: _indice,
           onTap: (i) => setState(() => _indice = i),
-          backgroundColor: const Color(0xFF1A1A1A),
-          selectedItemColor: const Color(0xFFD4AF37),
+          backgroundColor: _grafito,
+          selectedItemColor: _dorado,
           unselectedItemColor: Colors.white54,
           type: BottomNavigationBarType.fixed,
-          showUnselectedLabels: true,
+          elevation: 0,
           selectedLabelStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
           unselectedLabelStyle: const TextStyle(fontSize: 10),
-          elevation: 0,
           items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: 'Inicio'),
             BottomNavigationBarItem(icon: Icon(Icons.travel_explore_rounded), label: 'Turismo'),
-            BottomNavigationBarItem(icon: Icon(Icons.groups_rounded), label: 'Comunidad'),
+            BottomNavigationBarItem(icon: Icon(Icons.store_mall_directory_rounded), label: 'Negocios'),
             BottomNavigationBarItem(icon: Icon(Icons.handshake_rounded), label: 'Vendedores'),
-            BottomNavigationBarItem(icon: Icon(Icons.menu_rounded), label: 'Más'),
+            BottomNavigationBarItem(icon: Icon(Icons.casino_rounded), label: 'Ruleta'),
           ],
         ),
       ),
-      body: IndexedStack(
-        index: _indice,
-        children: [
-          _buildHomeContent(),
-          const TurismoPage(),
-          const ComunidadPage(),
-          const VendedoresPage(),
-          _buildMasContent(),
-        ],
-      ),
-    );
-  }
-                        '🌎 VENTON PRO GLOBAL',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1.2,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Publicidad, negocios, turismo y comunidad en Colombia, Venezuela, España y Estados Unidos.',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                // Selector de país
-                PaisSelector(
-                  paisSeleccionado: _paisSeleccionado,
-                  onPaisChanged: (pais) {
-                    setState(() => _paisSeleccionado = pais);
-                  },
-                ),
-                const SizedBox(height: 8),
-                // Stories tipo Instagram
-                StoriesWidget(
-                  stories: [
-                    StoryItem(
-                      titulo: 'Publicar',
-                      icono: Icons.add_circle_rounded,
-                      onTap: () => Navigator.pushNamed(context, '/subir_contenido'),
-                    ),
-                    StoryItem(
-                      titulo: 'VENTON PRO',
-                      icono: Icons.workspace_premium_rounded,
-                      onTap: () => VentonHelpers.abrirWhatsApp(),
-                    ),
-                    StoryItem(
-                      titulo: 'Turismo',
-                      icono: Icons.terrain_rounded,
-                      onTap: () => Navigator.pushNamed(context, '/turismo'),
-                    ),
-                    StoryItem(
-                      titulo: 'Químicos',
-                      icono: Icons.science_rounded,
-                      onTap: () => Navigator.pushNamed(context, '/quimicos'),
-                    ),
-                    StoryItem(
-                      titulo: 'Café',
-                      icono: Icons.local_cafe_rounded,
-                      onTap: () => Navigator.pushNamed(context, '/cafe'),
-                    ),
-                    StoryItem(
-                      titulo: 'Negocios',
-                      icono: Icons.store_rounded,
-                      onTap: () => Navigator.pushNamed(context, '/vendedores'),
-                    ),
-                    StoryItem(
-                      titulo: 'Colombia',
-                      icono: Icons.flag_rounded,
-                      onTap: () => VentonHelpers.abrirWhatsApp(
-                        mensaje: 'Hola, quiero información sobre negocios en Colombia.',
-                      ),
-                    ),
-                    StoryItem(
-                      titulo: 'Venezuela',
-                      icono: Icons.flag_rounded,
-                      onTap: () => VentonHelpers.abrirWhatsApp(
-                        mensaje: 'Hola, quiero información sobre negocios en Venezuela.',
-                      ),
-                    ),
-                    StoryItem(
-                      titulo: 'España',
-                      icono: Icons.flag_rounded,
-                      onTap: () => VentonHelpers.abrirWhatsApp(
-                        mensaje: 'Hola, quiero información sobre negocios en España.',
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 14),
-                // Banner rotativo con mensajes comerciales y psicología de venta
-                BannerRotativo(
-                  items: [
-                    BannerItem(
-                      titulo: '📢 Publica tu negocio en VENTON PRO',
-                      subtitulo: 'Haz que te vean en más lugares',
-                      icono: Icons.campaign_rounded,
-                      gradiente: const LinearGradient(
-                        colors: [Color(0xFF25D366), Color(0xFF25A045)],
-                      ),
-                      onTap: () => VentonHelpers.abrirWhatsApp(
-                        mensaje: 'Hola, quiero publicar mi negocio en VENTON PRO.',
-                      ),
-                    ),
-                    BannerItem(
-                      titulo: '🌎 Colombia · Venezuela · España · Estados Unidos',
-                      subtitulo: 'Tu negocio puede crecer sin límites',
-                      icono: Icons.public_rounded,
-                      gradiente: const LinearGradient(
-                        colors: [Color(0xFF1A4D2E), Color(0xFF4F6F52)],
-                      ),
-                      onTap: () => VentonHelpers.abrirWhatsApp(
-                        mensaje: 'Hola, quiero información sobre negocios globales.',
-                      ),
-                    ),
-                    BannerItem(
-                      titulo: '🔥 Mira gratis. Comparte fácil.',
-                      subtitulo: 'Cuando quieras crecer, anuncia con nosotros',
-                      icono: Icons.local_fire_department_rounded,
-                      gradiente: const LinearGradient(
-                        colors: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
-                      ),
-                      onTap: () => Navigator.pushNamed(context, '/comunidad'),
-                    ),
-                    BannerItem(
-                      titulo: '💼 Publicidad desde \$20.000/mes',
-                      subtitulo: 'Activa tu anuncio por WhatsApp',
-                      icono: Icons.monetization_on_rounded,
-                      gradiente: const LinearGradient(
-                        colors: [Color(0xFFD4AF37), Color(0xFFFFC107)],
-                      ),
-                      onTap: () => VentonHelpers.abrirWhatsApp(
-                        mensaje: 'Hola, quiero activar publicidad en VENTON PRO.',
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 18),
-                // Card ruleta solo para Colombia
-                _buildCardRuleta(),
-                const SizedBox(height: 12),
-                // Botón Mapa
-                _buildBotonMapa(),
-                const SizedBox(height: 12),
-                // Botón Compartir
-                _buildBotonCompartir(),
-                const SizedBox(height: 12),
-                _seccionTitulo(context, 'Acceso rápido'),
-                const SizedBox(height: 12),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: AccesoRapido(items: _accesos(context)),
-                ),
-                const SizedBox(height: 20),
-                if (MockData.productosEnOferta.isNotEmpty) ...[
-                  _seccionTitulo(
-                    context,
-                    'Ofertas del momento',
-                    icono: Icons.local_fire_department_rounded,
-                  ),
-                  const SizedBox(height: 6),
-                  SeccionOfertas(productos: MockData.productosEnOferta),
-                  const SizedBox(height: 16),
-                ],
-                _seccionTitulo(context, 'Turismo destacado'),
-                FeedReciente(
-                  titulo: '',
-                  items: MockData.turismoSantaRosa
-                      .map(
-                        (e) => FeedItem(
-                          titulo: e.titulo,
-                          subtitulo: VentonHelpers.formatearPrecio(e.precio),
-                          imagenUrl: e.imagenUrl,
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  ExperienciaDetallePage(experiencia: e),
-                            ),
-                          ),
-                        ),
-                      )
-                      .toList(),
-                ),
-                const SizedBox(height: 12),
-                _seccionTitulo(context, 'Productos premium'),
-                FeedReciente(
-                  titulo: '',
-                  items: MockData.destacadosInicio
-                      .map(
-                        (p) => FeedItem(
-                          titulo: p.nombre,
-                          subtitulo: VentonHelpers.formatearPrecio(p.precio),
-                          imagenUrl: p.imagenUrl,
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  ProductoDetallePage(producto: p),
-                            ),
-                          ),
-                        ),
-                      )
-                      .toList(),
-                ),
-                const SizedBox(height: 16),
-                BannerAdSlot(
-                  onTap: () => VentonHelpers.abrirWhatsApp(
-                    mensaje:
-                        'Hola VENTON PRO, quiero anunciar mi negocio en la app.',
-                  ),
-                ),
-                const SizedBox(height: 100),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 
-  Widget _buildCardRuleta() {
-    final esColombia = _paisSeleccionado == 'Colombia';
-    
-    if (!esColombia) {
-      return Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16),
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.grey[100],
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey[300]!),
-        ),
-        child: Column(
-          children: [
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Material(
-        elevation: 3,
-        shadowColor: AppTheme.bronce.withOpacity(0.4),
-        borderRadius: BorderRadius.circular(16),
-        child: InkWell(
-          onTap: () {
-            if (true) {
-              _mostrarPopupRuleta();
-            } else {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const RuletaPage()),
-              );
-            }
-          },
-          borderRadius: BorderRadius.circular(16),
-          child: Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              gradient: true
-                  ? AppTheme.gradienteBronce
-                  : LinearGradient(
-                      colors: [
-                        AppTheme.azulMarino,
-                        AppTheme.azulMarinoClaro,
-                      ],
-                    ),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.casino_rounded,
-                    color: Colors.white,
-                    size: 28,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        true
-                            ? '¡Ya podés girar!'
-                            : 'Próxima jugada',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w900,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        true
-                            ? 'Tu ruleta diaria te espera'
-                            : ',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.9),
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                          fontFamily: true ? null : 'monospace',
-                          letterSpacing: true ? 0 : 1.5,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.25),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    true ? 'GIRAR' : 'Ver',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 12,
-                      letterSpacing: 1,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+  Widget _construirHome() {
+    return Scaffold(
+      backgroundColor: _crema,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: FloatingActionButton.extended(
+          onPressed: _abrirWhatsApp,
+          backgroundColor: _verde,
+          icon: const Icon(Icons.campaign, color: Colors.white),
+          label: const Text(
+            'Anunciar por WhatsApp',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context) {
-    return SliverAppBar(
-      expandedHeight: 110,
-      pinned: false,
-      floating: true,
-      backgroundColor: AppTheme.azulMarino,
-      automaticallyImplyLeading: false,
-      actions: [
-        IconButton(
-          tooltip: 'Buscar',
-          icon: const Icon(Icons.search_rounded, color: Colors.white),
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const BuscarPage()),
-          ),
-        ),
-        IconButton(
-          tooltip: 'Favoritos',
-          icon: const Icon(Icons.favorite_border_rounded, color: Colors.white),
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const FavoritosPage()),
-          ),
-        ),
-        const SizedBox(width: 4),
-      ],
-      flexibleSpace: FlexibleSpaceBar(
-        background: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [AppTheme.azulMarino, AppTheme.azulMarinoClaro],
-            ),
-          ),
-          child: Stack(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Positioned(
-                right: -30,
-                top: -30,
-                child: Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppTheme.bronce.withOpacity(0.1),
-                  ),
-                ),
-              ),
-              SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  child: Row(
-                    children: [
-                      const VentonProLogo(size: 44, conTexto: false),
-                      const SizedBox(width: 10),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            VentonConfig.appName,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 1,
-                            ),
-                          ),
-                          Text(
-                            'Productos premium',
-                            style: TextStyle(
-                              color: AppTheme.bronceClaro,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 1.2,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              _construirHeader(),
+              _construirSelectorPais(),
+              const SizedBox(height: 16),
+              _construirStories(),
+              const SizedBox(height: 12),
+              _construirCarrusel(),
+              const SizedBox(height: 12),
+              _construirTarjetaRuleta(),
+              const SizedBox(height: 12),
+              _construirFooterLegal(),
+              const SizedBox(height: 90),
             ],
           ),
         ),
@@ -535,277 +129,248 @@ class _InicioPageState extends State<InicioPage> {
     );
   }
 
-  List<AccesoRapidoItem> _accesos(BuildContext context) {
-    return [
-      AccesoRapidoItem(
-        icono: Icons.terrain_rounded,
-        etiqueta: 'Turismo',
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const TurismoPage()),
+  Widget _construirHeader() {
+    return Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [_azulOscuro, Color(0xFF2D5016)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
       ),
-      // AccesoRapidoItem(
-      //   icono: Icons.local_cafe_rounded,
-      //   etiqueta: 'Café',
-      //   onTap: () => Navigator.push(
-      //     context,
-      //     MaterialPageRoute(builder: (_) => const CafePage()),
-      //   ),
-      // ),
-      AccesoRapidoItem(
-        icono: Icons.science_rounded,
-        etiqueta: 'Químicos',
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const QuimicosPage()),
-        ),
-      ),
-      AccesoRapidoItem(
-        icono: Icons.casino_rounded,
-        etiqueta: 'Ruleta',
-        color: AppTheme.bronceOscuro,
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const RuletaPage()),
-        ),
-      ),
-      AccesoRapidoItem(
-        icono: Icons.person_add_rounded,
-        etiqueta: 'Vendedor',
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const VendedorRegistroPage(),
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 28),
+      child: Column(
+        children: const [
+          Text(
+            '🌎  VENTON PRO GLOBAL',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.5,
+            ),
           ),
-        ),
-      ),
-      AccesoRapidoItem(
-        icono: Icons.upload_rounded,
-        etiqueta: 'Subir',
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const SubirContenidoPage(),
+          SizedBox(height: 10),
+          Text(
+            'Publicidad, negocios, turismo y comunidad en\nColombia, Venezuela, España y Estados Unidos.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white70, fontSize: 13, height: 1.4),
           ),
-        ),
+        ],
       ),
-      AccesoRapidoItem(
-        icono: Icons.favorite_rounded,
-        etiqueta: 'Favoritos',
-        color: AppTheme.bronceOscuro,
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const FavoritosPage()),
-        ),
-      ),
-      AccesoRapidoItem(
-        icono: Icons.chat_bubble_rounded,
-        etiqueta: 'Contacto',
-        color: AppTheme.azulMarino,
-        onTap: () => VentonHelpers.abrirWhatsApp(),
-      ),
-    ];
+    );
   }
 
-  Widget _seccionTitulo(
-    BuildContext context,
-    String texto, {
-    IconData? icono,
-  }) {
+  Widget _construirSelectorPais() {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 8, offset: const Offset(0, 2)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Selecciona tu país:',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _azulOscuro),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            decoration: BoxDecoration(
+              border: Border.all(color: _dorado, width: 1.5),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: _paisSeleccionado,
+                isExpanded: true,
+                icon: const Icon(Icons.arrow_drop_down, color: _dorado),
+                items: _paises.map((p) => DropdownMenuItem(value: p, child: Text(p))).toList(),
+                onChanged: (v) => setState(() => _paisSeleccionado = v ?? _paises[0]),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _construirStories() {
+    final stories = [
+      {'icon': Icons.add_circle, 'label': 'Publicar', 'onTap': () {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const SubirContenidoPage()));
+      }},
+      {'icon': Icons.workspace_premium, 'label': 'VENTON PRO', 'onTap': () {}},
+      {'icon': Icons.landscape, 'label': 'Turismo', 'onTap': () {
+        setState(() => _indice = 1);
+      }},
+      {'icon': Icons.science, 'label': 'Químicos', 'onTap': () {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const QuimicosPage()));
+      }},
+      {'icon': Icons.map, 'label': 'Mapa', 'onTap': () {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const TurismoMapaPage()));
+      }},
+    ];
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Stories',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _azulOscuro),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 100,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: stories.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 14),
+              itemBuilder: (_, i) {
+                final s = stories[i];
+                return GestureDetector(
+                  onTap: s['onTap'] as VoidCallback,
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 70,
+                        height: 70,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _dorado.withOpacity(0.85),
+                          border: Border.all(color: _dorado, width: 2),
+                        ),
+                        child: Icon(s['icon'] as IconData, color: Colors.white, size: 32),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(s['label'] as String, style: const TextStyle(fontSize: 12, color: _azulOscuro)),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _construirCarrusel() {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFFF8C42), _naranja],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+      ),
       child: Row(
         children: [
           Container(
-            width: 4,
-            height: 22,
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              gradient: AppTheme.gradienteBronce,
-              borderRadius: BorderRadius.circular(2),
+              color: Colors.white.withOpacity(0.25),
+              borderRadius: BorderRadius.circular(10),
             ),
+            child: const Icon(Icons.local_fire_department, color: Colors.white, size: 32),
           ),
-          const SizedBox(width: 10),
-          if (icono != null) ...[
-            Icon(icono, color: AppTheme.bronceOscuro, size: 18),
-            const SizedBox(width: 6),
-          ],
-          Text(
-            texto,
-            style: const TextStyle(
-              fontWeight: FontWeight.w800,
-              color: AppTheme.azulMarino,
-              fontSize: 16,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBotonMapa() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.blue.shade400, Colors.blue.shade600],
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.blue.withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const TurismoMapaPage()),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
+          const SizedBox(width: 14),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.map_rounded,
-                    size: 28,
-                    color: Colors.white,
-                  ),
+                Text(
+                  '🔥 Mira gratis. Comparte.',
+                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Mapa / Ver negocios cerca',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Encuentra negocios cerca de ti',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.9),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Icon(
-                  Icons.arrow_forward_ios,
-                  color: Colors.white,
-                  size: 20,
+                SizedBox(height: 4),
+                Text(
+                  'Cuando quieras crecer, anuncia con nosotros',
+                  style: TextStyle(color: Colors.white, fontSize: 12),
                 ),
               ],
             ),
           ),
-        ),
+        ],
       ),
     );
   }
 
-  Widget _buildBotonCompartir() {
+  Widget _construirTarjetaRuleta() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF25D366), Color(0xFF25A045)],
-        ),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF25D366).withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+          BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 8, offset: const Offset(0, 2)),
+        ],
+      ),
+      child: Column(
+        children: [
+          const Icon(Icons.casino, color: _azulOscuro, size: 56),
+          const SizedBox(height: 8),
+          const Text(
+            '🎰 RULETA VENTON',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _azulOscuro),
+          ),
+          const SizedBox(height: 6),
+          const Text(
+            'Gira y gana descuentos en productos VENTON',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 13, color: Colors.black54),
+          ),
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () => setState(() => _indice = 4),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _dorado,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              child: const Text(
+                'GIRAR',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.2),
+              ),
+            ),
           ),
         ],
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () => _compartirApp(),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.share_rounded,
-                    size: 28,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Compartir VENTON PRO',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Invita a tus amigos',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.9),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Icon(
-                  Icons.arrow_forward_ios,
-                  color: Colors.white,
-                  size: 20,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
     );
   }
 
-  void _compartirApp() async {
-    final text = '''
-Descarga VENTON PRO GLOBAL 🚀
-Publicidad, negocios, turismo y comunidad.
-👉 https://github.com/richardlomdl95-bit/VENTON-PRO-GLOBAL
-''';
-    
-    await Share.share(
-      text,
-      subject: 'VENTON PRO GLOBAL - La mejor app para negocios',
+  Widget _construirFooterLegal() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          TextButton(
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PoliticaPage())),
+            child: const Text('Privacidad', style: TextStyle(color: Colors.black45, fontSize: 11)),
+          ),
+          const Text('·', style: TextStyle(color: Colors.black45)),
+          TextButton(
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TerminosPage())),
+            child: const Text('Términos', style: TextStyle(color: Colors.black45, fontSize: 11)),
+          ),
+        ],
+      ),
     );
   }
 }
