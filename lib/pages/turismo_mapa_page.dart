@@ -226,12 +226,11 @@ class _TurismoMapaPageState extends State<TurismoMapaPage>
                         width: 70,
                         height: 70,
                         fit: BoxFit.cover,
-                        placeholder: (_, __) =>
-                            Container(color: _grafito),
-                        errorWidget: (_, __, ___) => const Icon(
-                            Icons.hotel,
-                            color: _dorado,
-                            size: 22),
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const Center(child: CircularProgressIndicator(color: Color(0xFFD4A017)));
+                        },
+                        errorBuilder: (context, error, stackTrace) => const Icon(Icons.image, color: Colors.grey),
                       )
                     : const Icon(Icons.hotel,
                         color: _dorado, size: 22),
@@ -372,6 +371,9 @@ class HotelData {
 // WIDGETS AUXILIARES
 // ============================================================================
 class _BotonRedondo extends StatelessWidget {
+  static const Color _dorado = Color(0xFFD4A017);
+  static const Color _grafito = Color(0xFF1A1A1A);
+  
   final IconData icono;
   final VoidCallback onTap;
 
