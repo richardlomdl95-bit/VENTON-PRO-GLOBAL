@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/venton_config.dart';
+import '../widgets/franja_venton.dart';
 import 'widgets/_grilla_productos.dart';
 
 class QuimicosPage extends StatelessWidget {
@@ -22,7 +23,21 @@ class QuimicosPage extends StatelessWidget {
         iconTheme: const IconThemeData(color: Color(0xFFD4AF37)),
         elevation: 0,
       ),
-      body: GrillaProductos(productos: MockData.quimicosPremium),
+      body: Column(
+        children: [
+          const FranjaVenton(
+            mensajes: [
+              '🧪 QUÍMICOS PREMIUM VENTON',
+              '📲 Pedidos: WhatsApp 322 560 9121',
+              '🚚 ENVÍOS A TODO COLOMBIA',
+            ],
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: GrillaProductos(productos: MockData.quimicosPremium),
+          ),
+        ],
+      ),
     );
   }
 }

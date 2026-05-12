@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'turismo_page.dart';
 import 'turismo_mapa_page.dart';
 import 'comunidad_page.dart';
@@ -20,6 +21,15 @@ class InicioPage extends StatefulWidget {
 class _InicioPageState extends State<InicioPage> {
   int _indice = 0;
   String _paisSeleccionado = 'Selecciona un país';
+  int _carouselIndex = 0;
+  final CarouselController _carouselController = CarouselController();
+
+  final List<String> _carouselImages = [
+    'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=800&h=400&fit=crop',
+  ];
 
   static const Color _crema = Color(0xFFFFF8E7);
   static const Color _azulOscuro = Color(0xFF0F1B3D);
@@ -167,6 +177,9 @@ class _InicioPageState extends State<InicioPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _construirHeader(),
+              const SizedBox(height: 16),
+              _construirCarousel(),
+              const SizedBox(height: 16),
               _construirSelectorPais(),
               const SizedBox(height: 16),
               _construirStories(),
@@ -181,6 +194,91 @@ class _InicioPageState extends State<InicioPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _construirCarousel() {
+    return Column(
+      children: [
+        CarouselSlider.builder(
+          carouselController: _carouselController,
+          options: CarouselOptions(
+            height: 180,
+            autoPlay: true,
+            autoPlayInterval: const Duration(seconds: 4),
+            autoPlayAnimationDuration: const Duration(milliseconds: 800),
+            autoPlayCurve: Curves.easeInOut,
+            enlargeCenterPage: true,
+            viewportFraction: 0.9,
+            aspectRatio: 16/9,
+            onPageChanged: (index, reason) {
+              setState(() {
+                _carouselIndex = index;
+              });
+            },
+          ),
+          itemCount: _carouselImages.length,
+          itemBuilder: (context, index, realIndex) {
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 5),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.network(
+                  _carouselImages[index],
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [_naranja, _dorado],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.image,
+                          color: Colors.white,
+                          size: 40,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            );
+          },
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: _carouselImages.asMap().entries.map((entry) {
+            return GestureDetector(
+              onTap: () => _carouselController.animateToPage(entry.key),
+              child: Container(
+                width: 8,
+                height: 8,
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _carouselIndex == entry.key ? _dorado : Colors.grey.withOpacity(0.5),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 
