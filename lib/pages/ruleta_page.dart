@@ -374,6 +374,7 @@ class _RuletaPageState extends State<RuletaPage>
           ],
         ),
       ),
+      ),
     );
   }
 }

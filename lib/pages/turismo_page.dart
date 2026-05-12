@@ -97,7 +97,7 @@ class _TurismoPageState extends State<TurismoPage> with TickerProviderStateMixin
                   child: Material(
                     color: Colors.white,
                     elevation: 2,
-                    shadowColor: AppTheme.azulMarino.withOpacity(0.18),
+                    shadowColor: Color(0xFF0A2540).withOpacity(0.18),
                     borderRadius: BorderRadius.circular(18),
                     clipBehavior: Clip.antiAlias,
                     child: InkWell(
@@ -186,7 +186,7 @@ class _TurismoPageState extends State<TurismoPage> with TickerProviderStateMixin
                                     Icon(
                                       Icons.location_on,
                                       size: 16,
-                                      color: AppTheme.dorado,
+                                      color: Color(0xFFD4A017),
                                     ),
                                     const SizedBox(width: 4),
                                     Expanded(
@@ -206,7 +206,7 @@ class _TurismoPageState extends State<TurismoPage> with TickerProviderStateMixin
                                     Icon(
                                       Icons.access_time,
                                       size: 16,
-                                      color: AppTheme.dorado,
+                                      color: Color(0xFFD4A017),
                                     ),
                                     const SizedBox(width: 4),
                                     Text(

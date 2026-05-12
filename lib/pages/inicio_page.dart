@@ -378,7 +378,6 @@ class _InicioPageState extends State<InicioPage> with TickerProviderStateMixin {
               },
               itemCount: _destacados.length,
               pageSnapping: true,
-              controller: _pageController,
               itemBuilder: (context, index) {
                 final destacado = _destacados[index];
                 return Container(

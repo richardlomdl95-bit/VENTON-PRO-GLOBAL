@@ -428,6 +428,9 @@ class HotelData {
 class _BotonRedondo extends StatelessWidget {
   final IconData icono;
   final VoidCallback onTap;
+  
+  static const Color _dorado = Color(0xFFD4A017);
+  static const Color _grafito = Color(0xFF1A1A1A);
 
   const _BotonRedondo({
     required this.icono,
