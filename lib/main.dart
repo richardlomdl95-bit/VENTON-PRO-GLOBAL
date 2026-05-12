@@ -4,7 +4,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'core/splash_screen.dart';
 import 'core/theme.dart';
 import 'core/venton_config.dart';
+import 'main_navigation_page.dart';
 import 'pages/anunciar_page.dart';
+import 'pages/crear_page.dart';
+import 'pages/comunidad_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,6 +45,16 @@ class VentonProApp extends StatelessWidget {
       home: const SplashScreen(),
       routes: {
         '/anunciar': (context) => const AnunciarPage(),
+        '/crear': (context) => const CrearPage(),
+        '/comunidad': (context) => const ComunidadPage(),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/') {
+          return MaterialPageRoute(
+            builder: (context) => const MainNavigationPage(),
+          );
+        }
+        return null;
       },
     );
   }

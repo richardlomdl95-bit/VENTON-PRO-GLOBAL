@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'dart:async';
 import '../widgets/franja_venton.dart';
 import 'turismo_page.dart';
@@ -27,7 +28,6 @@ class _InicioPageState extends State<InicioPage> with TickerProviderStateMixin {
   late AnimationController _kenBurnsController1;
   late AnimationController _kenBurnsController2;
   late AnimationController _kenBurnsController3;
-  late AnimationController _fabController;
   int _currentPageIndex = 0;
   Timer? _autoScrollTimer;
   String _paisSeleccionado = '🇨🇴 Colombia';
@@ -47,7 +47,7 @@ class _InicioPageState extends State<InicioPage> with TickerProviderStateMixin {
     {
       'nombre': 'Termales Santa Rosa de Cabal',
       'descripcion': 'Aguas termales naturales con cascada de 75 metros',
-      'imagen': 'https://images.unsplash.com/photo-1583416750470-965b2707b355',
+      'imagen': 'https://images.unsplash.com/photo-1583416750470-965b2707b355?w=800&q=80',
       'whatsapp': 'https://wa.me/573225609121?text=Hola%20me%20interesa%20Termales%20Santa%20Rosa',
       'lat': '4.8500',
       'lng': '-75.6000',
@@ -55,7 +55,7 @@ class _InicioPageState extends State<InicioPage> with TickerProviderStateMixin {
     {
       'nombre': 'Hotel Tacurrumbi',
       'descripcion': 'Hospedaje tradicional en el centro de Santa Rosa',
-      'imagen': 'https://images.unsplash.com/photo-1566073771259-6a8506099945',
+      'imagen': 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80',
       'whatsapp': 'https://wa.me/573225609121?text=Hola%20quiero%20reservar%20en%20Hotel%20Tacurrumbi',
       'lat': '4.8721',
       'lng': '-75.6234',
@@ -63,7 +63,7 @@ class _InicioPageState extends State<InicioPage> with TickerProviderStateMixin {
     {
       'nombre': 'Restaurante La Leyenda del Chorizo',
       'descripcion': 'Chorizo santarrosano auténtico',
-      'imagen': 'https://images.unsplash.com/photo-1544025162-d76694265947',
+      'imagen': 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&q=80',
       'whatsapp': 'https://wa.me/573225609121?text=Hola%20quiero%20reservar%20en%20La%20Leyenda',
       'lat': '4.8694',
       'lng': '-75.6213',
@@ -71,123 +71,7 @@ class _InicioPageState extends State<InicioPage> with TickerProviderStateMixin {
     {
       'nombre': 'Tour del Café Premium',
       'descripcion': 'Recorrido por fincas cafeteras con cata',
-      'imagen': 'https://images.unsplash.com/photo-1442550528053-c431ecb55509',
-      'whatsapp': 'https://wa.me/573225609121?text=Hola%20me%20interesa%20Tour%20del%20Cafe',
-      'lat': '4.8650',
-      'lng': '-75.6280',
-    },
-  ];
-
-  // Datos de restaurantes
-  final List<Map<String, String>> _restaurantes = [
-    {
-      'nombre': 'La Leyenda del Chorizo',
-      'precio': '\$25.000',
-      'imagen': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38',
-      'whatsapp': 'https://wa.me/573225609121?text=Hola%20quiero%20reservar%20en%20La%20Leyenda%20del%20Chorizo',
-      'lat': '4.8694',
-      'lng': '-75.6213',
-    },
-    {
-      'nombre': 'Restaurante El Recreo',
-      'precio': '\$30.000',
-      'imagen': 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0',
-      'whatsapp': 'https://wa.me/573225609121?text=Hola%20quiero%20reservar%20en%20El%20Recreo',
-      'lat': '4.8702',
-      'lng': '-75.6224',
-    },
-    {
-      'nombre': 'Asadero La Brasa',
-      'precio': '\$22.000',
-      'imagen': 'https://images.unsplash.com/photo-1546833999-b9f581a1996d',
-      'whatsapp': 'https://wa.me/573225609121?text=Hola%20quiero%20reservar%20en%20Asadero%20La%20Brasa',
-      'lat': '4.8688',
-      'lng': '-75.6201',
-    },
-    {
-      'nombre': 'Café del Parque',
-      'precio': '\$18.000',
-      'imagen': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085',
-      'whatsapp': 'https://wa.me/573225609121?text=Hola%20quiero%20reservar%20en%20Café%20del%20Parque',
-      'lat': '4.8696',
-      'lng': '-75.6218',
-    },
-    {
-      'nombre': 'Heladería Tradicional',
-      'precio': '\$12.000',
-      'imagen': 'https://images.unsplash.com/photo-1488900128323-21503983a07a',
-      'whatsapp': 'https://wa.me/573225609121?text=Hola%20quiero%20reservar%20en%20Heladería%20Tradicional',
-      'lat': '4.8691',
-      'lng': '-75.6209',
-    },
-  ];
-
-  // Datos de hoteles
-  final List<Map<String, String>> _hoteles = [
-    {
-      'nombre': 'Hotel Tacurrumbi',
-      'precio': '\$120.000',
-      'imagen': 'https://images.unsplash.com/photo-1566073771259-6a8506099945',
-      'whatsapp': 'https://wa.me/573225609121?text=Hola%20quiero%20reservar%20en%20Hotel%20Tacurrumbi',
-      'lat': '4.8721',
-      'lng': '-75.6234',
-    },
-    {
-      'nombre': 'Hotel Las Heliconias',
-      'precio': '\$150.000',
-      'imagen': 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa',
-      'whatsapp': 'https://wa.me/573225609121?text=Hola%20quiero%20reservar%20en%20Hotel%20Las%20Heliconias',
-      'lat': '4.8745',
-      'lng': '-75.6256',
-    },
-    {
-      'nombre': 'Eco-Hotel Termales del Otoño',
-      'precio': '\$180.000',
-      'imagen': 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4',
-      'whatsapp': 'https://wa.me/573225609121?text=Hola%20quiero%20reservar%20en%20Eco-Hotel%20Termales%20del%20Otoño',
-      'lat': '4.8612',
-      'lng': '-75.6189',
-    },
-    {
-      'nombre': 'Hostal Casa Verde',
-      'precio': '\$80.000',
-      'imagen': 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4',
-      'whatsapp': 'https://wa.me/573225609121?text=Hola%20quiero%20reservar%20en%20Hostal%20Casa%20Verde',
-      'lat': '4.8689',
-      'lng': '-75.6298',
-    },
-    {
-      'nombre': 'Hotel Termales Santa Rosa',
-      'precio': '\$200.000',
-      'imagen': 'https://images.unsplash.com/photo-1583416750470-965b2707b355',
-      'whatsapp': 'https://wa.me/573225609121?text=Hola%20quiero%20reservar%20en%20Hotel%20Termales%20Santa%20Rosa',
-      'lat': '4.8693',
-      'lng': '-75.6310',
-    },
-  ];
-
-  // Datos de experiencias
-  final List<Map<String, String>> _experiencias = [
-    {
-      'nombre': 'Termales Santa Rosa',
-      'duracion': '1 día completo',
-      'imagen': 'https://images.unsplash.com/photo-1583416750470-965b2707b355',
-      'whatsapp': 'https://wa.me/573225609121?text=Hola%20me%20interesa%20Termales%20Santa%20Rosa',
-      'lat': '4.8500',
-      'lng': '-75.6000',
-    },
-    {
-      'nombre': 'Cascadas de San Ramón',
-      'duracion': '4 horas',
-      'imagen': 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9',
-      'whatsapp': 'https://wa.me/573225609121?text=Hola%20me%20interesa%20Cascadas%20de%20San%20Ramón',
-      'lat': '4.8400',
-      'lng': '-75.5900',
-    },
-    {
-      'nombre': 'Tour del Café Premium',
-      'duracion': '6 horas',
-      'imagen': 'https://images.unsplash.com/photo-1442550528053-c431ecb55509',
+      'imagen': 'https://images.unsplash.com/photo-1442550528053-c431ecb55509?w=800&q=80',
       'whatsapp': 'https://wa.me/573225609121?text=Hola%20me%20interesa%20Tour%20del%20Cafe',
       'lat': '4.8650',
       'lng': '-75.6280',
@@ -203,67 +87,43 @@ class _InicioPageState extends State<InicioPage> with TickerProviderStateMixin {
     },
     {
       'nombre': 'Hotel Tacurrumbi',
-      'imagen': 'https://images.unsplash.com/photo-1566073771259-6a8506099945',
+      'imagen': 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80',
       'tipo': 'negocio',
     },
     {
       'nombre': 'La Leyenda',
-      'imagen': 'https://images.unsplash.com/photo-1544025162-d76694265947',
+      'imagen': 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&q=80',
       'tipo': 'negocio',
     },
     {
       'nombre': 'Termales',
-      'imagen': 'https://images.unsplash.com/photo-1583416750470-965b2707b355',
+      'imagen': 'https://images.unsplash.com/photo-1583416750470-965b2707b355?w=800&q=80',
       'tipo': 'negocio',
     },
     {
       'nombre': 'Tour Café',
-      'imagen': 'https://images.unsplash.com/photo-1442550528053-c431ecb55509',
+      'imagen': 'https://images.unsplash.com/photo-1442550528053-c431ecb55509?w=800&q=80',
       'tipo': 'negocio',
     },
     {
       'nombre': 'Café Parque',
-      'imagen': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085',
+      'imagen': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&q=80',
       'tipo': 'negocio',
     },
     {
       'nombre': 'Eco-Hotel',
-      'imagen': 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4',
+      'imagen': 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&q=80',
       'tipo': 'negocio',
     },
     {
       'nombre': 'Cascadas',
-      'imagen': 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9',
+      'imagen': 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=800&q=80',
       'tipo': 'negocio',
     },
     {
       'nombre': 'Asadero',
-      'imagen': 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1',
+      'imagen': 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&q=80',
       'tipo': 'negocio',
-    },
-  ];
-
-  // Datos de videos comunidad
-  final List<Map<String, String>> _videosComunidad = [
-    {
-      'nombre': 'Carlos · La Leyenda',
-      'imagen': 'https://images.unsplash.com/photo-1544025162-d76694265947',
-    },
-    {
-      'nombre': 'María · Tacurrumbi',
-      'imagen': 'https://images.unsplash.com/photo-1566073771259-6a8506099945',
-    },
-    {
-      'nombre': 'Hernán · Termales',
-      'imagen': 'https://images.unsplash.com/photo-1583416750470-965b2707b355',
-    },
-    {
-      'nombre': 'Marta · Tour Café',
-      'imagen': 'https://images.unsplash.com/photo-1442550528053-c431ecb55509',
-    },
-    {
-      'nombre': 'Pedro · Café Parque',
-      'imagen': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085',
     },
   ];
 
@@ -297,11 +157,6 @@ class _InicioPageState extends State<InicioPage> with TickerProviderStateMixin {
       vsync: this,
     )..repeat(reverse: true);
     
-    _fabController = AnimationController(
-      duration: const Duration(seconds: 2),
-      vsync: this,
-    )..repeat(reverse: true);
-    
     _startAutoScroll();
   }
 
@@ -328,7 +183,6 @@ class _InicioPageState extends State<InicioPage> with TickerProviderStateMixin {
     _kenBurnsController1.dispose();
     _kenBurnsController2.dispose();
     _kenBurnsController3.dispose();
-    _fabController.dispose();
     _autoScrollTimer?.cancel();
     super.dispose();
   }
@@ -419,33 +273,14 @@ class _InicioPageState extends State<InicioPage> with TickerProviderStateMixin {
     }
   }
 
-  void _compartirNegocio(Map<String, String> negocio, String tipo) {
-    String mensaje;
-    if (tipo == 'experiencia') {
-      mensaje = '''🏞️ ${negocio['nombre']} - Santa Rosa de Cabal
-${negocio['duracion']} - Una experiencia única en Risaralda
-Descúbrela en VENTON PRO 👇
-https://ventonpro.com''';
-    } else {
-      mensaje = '''🌴 ${negocio['nombre']} - Santa Rosa de Cabal, Colombia
-${negocio['descripcion']}
+  void _compartirNegocio(Map<String, String> destacado) {
+    final mensaje = '''🌴 ${destacado['nombre']} - Santa Rosa de Cabal, Colombia
+${destacado['descripcion']}
 Mira más en VENTON PRO 👇
 https://ventonpro.com
 Descarga la app: vitrina digital de Santa Rosa de Cabal''';
-    }
     
     Share.share(mensaje);
-  }
-
-  void _abrirMapa(String lat, String lng) async {
-    final url = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
-    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No se pudo abrir Google Maps')),
-        );
-      }
-    }
   }
 
   @override
@@ -466,68 +301,27 @@ Descarga la app: vitrina digital de Santa Rosa de Cabal''';
               ],
             ),
             
-            // CAMBIO 3 - Historias estilo Instagram arriba
+            // Historias estilo Instagram arriba
             _buildHistoriasInstagram(),
             
-            // BLOQUE 1 - HERO SANTA ROSA con selector de país
+            // HERO SANTA ROSA con selector de país
             _buildHeroSantaRosa(),
             
-            // CAMBIO 2 - Sección Cómo Llegar
-            _buildComoLlegar(),
-            
-            // BLOQUE 2 - DESTACADOS HOY
+            // DESTACADOS HOY
             _buildDestacadosHoy(),
             
-            // BLOQUE 3 - DONDE COMER
-            _buildDondeComer(),
-            
-            // BLOQUE 4 - DONDE DORMIR
-            _buildDondeDormir(),
-            
-            // BLOQUE 5 - QUE HACER EN SANTA ROSA
-            _buildQueHacer(),
-            
-            // CAMBIO 8 - Sección Videos de la Comunidad activa
-            _buildVideosComunidad(),
-            
-            // BLOQUE 7 - MAPA INTERACTIVO
-            _buildMapaInteractivo(),
-            
-            // BLOQUE 8 - RULETA VENTON
-            _buildRuletaVenton(),
-            
-            // BLOQUE 9 - LLAMADO A LA ACCION COMERCIAL
+            // Tarjeta dorada "TU NEGOCIO AQUÍ"
             _buildLlamadoAccionComercial(),
             
-            // CAMBIO 10 - Footer internacional
+            // Footer internacional
             _buildFooter(),
           ],
         ),
       ),
-      // CAMBIO 7 - Botón flotante global
-      floatingActionButton: AnimatedBuilder(
-        animation: _fabController,
-        builder: (context, child) {
-          return Transform.scale(
-            scale: 1.0 + (_fabController.value * 0.1),
-            child: FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const AnunciarPage()),
-                );
-              },
-              backgroundColor: _dorado,
-              mini: false,
-              child: const Icon(Icons.campaign, color: Colors.white),
-            ),
-          );
-        },
-      ),
     );
   }
 
-  // CAMBIO 3 - Historias estilo Instagram arriba
+  // Historias estilo Instagram arriba
   Widget _buildHistoriasInstagram() {
     return SizedBox(
       height: 120,
@@ -552,16 +346,15 @@ Descarga la app: vitrina digital de Santa Rosa de Cabal''';
                   child: historia['tipo'] == 'add'
                     ? const Icon(Icons.add, color: Colors.black, size: 30)
                     : ClipOval(
-                        child: Image.network(
-                          historia['imagen']!,
+                        child: CachedNetworkImage(
+                          imageUrl: historia['imagen']!,
                           width: 70,
                           height: 70,
                           fit: BoxFit.cover,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return const Center(child: CircularProgressIndicator(color: _dorado));
-                          },
-                          errorBuilder: (context, error, stackTrace) => Container(
+                          placeholder: (context, url) => const Center(
+                            child: CircularProgressIndicator(color: _dorado)),
+                          ),
+                          errorWidget: (context, url, error) => Container(
                             color: _grafito,
                             child: const Icon(Icons.image, color: Colors.grey),
                           ),
@@ -590,7 +383,7 @@ Descarga la app: vitrina digital de Santa Rosa de Cabal''';
     );
   }
 
-  // BLOQUE 1 - HERO SANTA ROSA con selector de país
+  // HERO SANTA ROSA con selector de país
   Widget _buildHeroSantaRosa() {
     return Container(
       height: 280,
@@ -603,16 +396,16 @@ Descarga la app: vitrina digital de Santa Rosa de Cabal''';
           // Imagen de fondo
           ClipRRect(
             borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
-            child: Image.network(
-              'https://images.unsplash.com/photo-1518684079-3c830dcef090',
+            child: CachedNetworkImage(
+              imageUrl: 'https://images.unsplash.com/photo-1518684079-3c830d4305b8?w=800&q=80',
               width: double.infinity,
               height: 280,
               fit: BoxFit.cover,
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return const Center(child: CircularProgressIndicator(color: _dorado));
-              },
-              errorBuilder: (context, error, stackTrace) => Container(
+              placeholder: (context, url) => Container(
+                color: _azulMarino,
+                child: const Center(child: CircularProgressIndicator(color: _dorado)),
+              ),
+              errorWidget: (context, url, error) => Container(
                 color: _azulMarino,
                 child: const Center(child: Icon(Icons.landscape, color: _dorado, size: 50)),
               ),
@@ -696,193 +489,7 @@ Descarga la app: vitrina digital de Santa Rosa de Cabal''';
     );
   }
 
-  // CAMBIO 2 - Sección Cómo Llegar
-  Widget _buildComoLlegar() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 24),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                '✈️ CÓMO LLEGAR',
-                style: TextStyle(
-                  color: _dorado,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Container(
-              width: double.infinity,
-              height: 200,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
-                    blurRadius: 10,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Image.network(
-                      'https://images.unsplash.com/photo-1436491865332-7a61a109cc05',
-                      width: double.infinity,
-                      height: 200,
-                      fit: BoxFit.cover,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: _grafito,
-                          ),
-                          child: const Center(child: CircularProgressIndicator(color: _dorado)),
-                        );
-                      },
-                      errorBuilder: (context, error, stackTrace) => Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: _grafito,
-                        ),
-                        child: const Center(child: Icon(Icons.flight, color: Colors.grey)),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withOpacity(0.7),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Desde cualquier parte del mundo',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        const Text(
-                          'Llega a Santa Rosa de Cabal',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        const Text(
-                          '• Aeropuerto Matecaña Pereira (45 min en taxi)\n• Terminal de Transporte Pereira (40 min en bus)\n• Desde Bogotá: 7 horas por carretera\n• Desde Medellín: 5 horas por carretera\n• Desde Cali: 4 horas por carretera',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            height: 1.4,
-                          ),
-                        ),
-                        const Spacer(),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                onPressed: () async {
-                                  final url = Uri.parse('https://www.google.com/maps/dir/?api=1&destination=Santa+Rosa+de+Cabal,Risaralda,Colombia');
-                                  if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-                                    if (context.mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('No se pudo abrir Google Maps')),
-                                      );
-                                    }
-                                  }
-                                },
-                                icon: const Icon(Icons.location_on, color: Colors.black, size: 16),
-                                label: const Text(
-                                  '📍 Ver ruta en Google Maps',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: _dorado,
-                                  padding: const EdgeInsets.symmetric(vertical: 8),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                onPressed: () async {
-                                  final url = Uri.parse('https://wa.me/573225609121?text=Hola%20quiero%20viajar%20a%20Santa%20Rosa%20de%20Cabal%20necesito%20info');
-                                  if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-                                    if (context.mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('No se pudo abrir WhatsApp')),
-                                      );
-                                    }
-                                  }
-                                },
-                                icon: const Icon(Icons.chat, color: Colors.white, size: 16),
-                                label: const Text(
-                                  '💬 Pedir info de viaje',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: _verdeWhatsApp,
-                                  padding: const EdgeInsets.symmetric(vertical: 8),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-        ],
-      ),
-    );
-  }
-
-  // BLOQUE 2 - DESTACADOS HOY
+  // DESTACADOS HOY
   Widget _buildDestacadosHoy() {
     return Padding(
       padding: const EdgeInsets.only(top: 24),
@@ -973,22 +580,19 @@ Descarga la app: vitrina digital de Santa Rosa de Cabal''';
           // Imagen de fondo
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
-            child: Image.network(
-              destacado['imagen']!,
+            child: CachedNetworkImage(
+              imageUrl: destacado['imagen']!,
               width: double.infinity,
               height: 320,
               fit: BoxFit.cover,
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: _grafito,
-                  ),
-                  child: const Center(child: CircularProgressIndicator(color: _dorado)),
-                );
-              },
-              errorBuilder: (context, error, stackTrace) => Container(
+              placeholder: (context, url) => Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: _grafito,
+                ),
+                child: const Center(child: CircularProgressIndicator(color: _dorado)),
+              ),
+              errorWidget: (context, url, error) => Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   color: _grafito,
@@ -1043,7 +647,7 @@ Descarga la app: vitrina digital de Santa Rosa de Cabal''';
             top: 16,
             right: 16,
             child: GestureDetector(
-              onTap: () => _compartirNegocio(destacado, 'negocio'),
+              onTap: () => _compartirNegocio(destacado),
               child: Container(
                 width: 36,
                 height: 36,
@@ -1110,29 +714,6 @@ Descarga la app: vitrina digital de Santa Rosa de Cabal''';
                     ),
                   ),
                 ),
-                const SizedBox(height: 8),
-                // CAMBIO 5 - Botón Ver en mapa
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    onPressed: () => _abrirMapa(destacado['lat']!, destacado['lng']!),
-                    icon: const Icon(Icons.location_on, color: _dorado, size: 16),
-                    label: const Text(
-                      '📍 Ver en mapa',
-                      style: TextStyle(
-                        color: _dorado,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: _dorado),
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
@@ -1141,818 +722,7 @@ Descarga la app: vitrina digital de Santa Rosa de Cabal''';
     );
   }
 
-  // BLOQUE 3 - DONDE COMER
-  Widget _buildDondeComer() {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: const Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              '🍽️ DONDE COMER',
-              style: TextStyle(
-                color: _dorado,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        SizedBox(
-          height: 220,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: _restaurantes.length,
-            itemBuilder: (context, index) {
-              final restaurante = _restaurantes[index];
-              return Container(
-                width: 160,
-                margin: const EdgeInsets.only(right: 12),
-                child: _buildRestauranteCard(restaurante),
-              );
-            },
-          ),
-        ),
-        const SizedBox(height: 24),
-      ],
-    );
-  }
-
-  Widget _buildRestauranteCard(Map<String, String> restaurante) {
-    return GestureDetector(
-      onTap: () async {
-        final url = Uri.parse(restaurante['whatsapp']!);
-        if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('No se pudo abrir WhatsApp')),
-            );
-          }
-        }
-      },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 160,
-            height: 120,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.network(
-                restaurante['imagen']!,
-                width: 160,
-                height: 120,
-                fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      color: _grafito,
-                    ),
-                    child: const Center(child: CircularProgressIndicator(color: _dorado)),
-                  );
-                },
-                errorBuilder: (context, error, stackTrace) => Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    color: _grafito,
-                  ),
-                  child: const Center(child: Icon(Icons.restaurant, color: Colors.grey)),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            restaurante['nombre']!,
-            style: const TextStyle(
-              color: _blanco,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            restaurante['precio']!,
-            style: const TextStyle(
-              color: _dorado,
-              fontSize: 12,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // BLOQUE 4 - DONDE DORMIR
-  Widget _buildDondeDormir() {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: const Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              '🛏️ DONDE DORMIR',
-              style: TextStyle(
-                color: _dorado,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        SizedBox(
-          height: 220,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: _hoteles.length,
-            itemBuilder: (context, index) {
-              final hotel = _hoteles[index];
-              return Container(
-                width: 160,
-                margin: const EdgeInsets.only(right: 12),
-                child: _buildHotelCard(hotel),
-              );
-            },
-          ),
-        ),
-        const SizedBox(height: 24),
-      ],
-    );
-  }
-
-  Widget _buildHotelCard(Map<String, String> hotel) {
-    return GestureDetector(
-      onTap: () async {
-        final url = Uri.parse(hotel['whatsapp']!);
-        if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('No se pudo abrir WhatsApp')),
-            );
-          }
-        }
-      },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 160,
-            height: 120,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.network(
-                hotel['imagen']!,
-                width: 160,
-                height: 120,
-                fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      color: _grafito,
-                    ),
-                    child: const Center(child: CircularProgressIndicator(color: _dorado)),
-                  );
-                },
-                errorBuilder: (context, error, stackTrace) => Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    color: _grafito,
-                  ),
-                  child: const Center(child: Icon(Icons.hotel, color: Colors.grey)),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            hotel['nombre']!,
-            style: const TextStyle(
-              color: _blanco,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            hotel['precio']!,
-            style: const TextStyle(
-              color: _dorado,
-              fontSize: 12,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // BLOQUE 5 - QUE HACER EN SANTA ROSA
-  Widget _buildQueHacer() {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: const Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              '🏔️ QUE HACER EN SANTA ROSA',
-              style: TextStyle(
-                color: _dorado,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            children: [
-              _buildExperienciaCard(_experiencias[0], _kenBurnsController1),
-              const SizedBox(height: 16),
-              _buildExperienciaCard(_experiencias[1], _kenBurnsController2),
-              const SizedBox(height: 16),
-              _buildExperienciaCard(_experiencias[2], _kenBurnsController3),
-            ],
-          ),
-        ),
-        const SizedBox(height: 24),
-      ],
-    );
-  }
-
-  Widget _buildExperienciaCard(Map<String, String> experiencia, AnimationController controller) {
-    return Container(
-      width: double.infinity,
-      height: 180,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          // Imagen de fondo con efecto Ken Burns
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: AnimatedBuilder(
-              animation: controller,
-              builder: (context, child) {
-                return Transform.scale(
-                  scale: 1.0 + (controller.value * 0.15),
-                  child: child,
-                );
-              },
-              child: Image.network(
-                experiencia['imagen']!,
-                width: double.infinity,
-                height: 180,
-                fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: _grafito,
-                    ),
-                    child: const Center(child: CircularProgressIndicator(color: _dorado)),
-                  );
-                },
-                errorBuilder: (context, error, stackTrace) => Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: _grafito,
-                  ),
-                  child: const Center(child: Icon(Icons.landscape, color: Colors.grey)),
-                ),
-              ),
-            ),
-          ),
-          // Gradiente oscuro abajo
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: 100,
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.8),
-                    Colors.black,
-                  ],
-                ),
-              ),
-            ),
-          ),
-          // Botón compartir
-          Positioned(
-            top: 16,
-            right: 16,
-            child: GestureDetector(
-              onTap: () => _compartirNegocio(experiencia, 'experiencia'),
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.share, color: Colors.white, size: 18),
-              ),
-            ),
-          ),
-          // Contenido
-          Positioned(
-            bottom: 16,
-            left: 16,
-            right: 80,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  experiencia['nombre']!,
-                  style: const TextStyle(
-                    color: _blanco,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  experiencia['duracion']!,
-                  style: const TextStyle(
-                    color: _dorado,
-                    fontSize: 13,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // Botón flotante WhatsApp
-          Positioned(
-            bottom: 16,
-            right: 16,
-            child: FloatingActionButton(
-              mini: true,
-              backgroundColor: _verdeWhatsApp,
-              onPressed: () async {
-                final url = Uri.parse(experiencia['whatsapp']!);
-                if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('No se pudo abrir WhatsApp')),
-                    );
-                  }
-                }
-              },
-              child: const Icon(Icons.chat, color: Colors.white, size: 18),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // CAMBIO 8 - Sección Videos de la Comunidad activa
-  Widget _buildVideosComunidad() {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: const Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              '📹 VIDEOS DE LA COMUNIDAD',
-              style: TextStyle(
-                color: _dorado,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: GridView.count(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            crossAxisCount: 2,
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-            childAspectRatio: 9 / 16,
-            children: [
-              // Primer cuadro - PUBLICA TU VIDEO
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const AnunciarPage()),
-                  );
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    color: _dorado,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.videocam,
-                        color: Colors.white,
-                        size: 40,
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        '📹 PUBLICA TU VIDEO',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 4),
-                      const Text(
-                        'Plan Top \$100.000/mes',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 11,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              // Videos de comunidad
-              ...List.generate(_videosComunidad.length, (index) {
-                final video = _videosComunidad[index];
-                return GestureDetector(
-                  onTap: () async {
-                    final url = Uri.parse('https://wa.me/573225609121?text=Hola%20me%20interesó%20tu%20video%20en%20VENTON%20PRO%20de%20${Uri.encodeComponent(video['nombre']!)}');
-                    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('No se pudo abrir WhatsApp')),
-                        );
-                      }
-                    }
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: Image.network(
-                            video['imagen']!,
-                            width: double.infinity,
-                            height: double.infinity,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(16),
-                                  color: _grafito,
-                                ),
-                                child: const Center(child: CircularProgressIndicator(color: _dorado)),
-                              );
-                            },
-                            errorBuilder: (context, error, stackTrace) => Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(16),
-                                color: _grafito,
-                              ),
-                              child: const Center(child: Icon(Icons.image, color: Colors.grey)),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.transparent,
-                                Colors.black.withOpacity(0.7),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Center(
-                          child: Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.6),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.play_arrow,
-                              color: Colors.white,
-                              size: 30,
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 8,
-                          left: 8,
-                          right: 8,
-                          child: Text(
-                            video['nombre']!,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
-        // Botón Ver todos los videos
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Próximamente')),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _dorado,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Text(
-                'Ver todos los videos →',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 24),
-      ],
-    );
-  }
-
-  // BLOQUE 7 - MAPA INTERACTIVO
-  Widget _buildMapaInteractivo() {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: const Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              '🗺️ EXPLORA EL PUEBLO',
-              style: TextStyle(
-                color: _dorado,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Container(
-            width: double.infinity,
-            height: 200,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Container(
-                    color: _azulMarino,
-                    child: const Center(
-                      child: Icon(
-                        Icons.map,
-                        color: _dorado,
-                        size: 60,
-                      ),
-                    ),
-                  ),
-                ),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const TurismoMapaPage()),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _dorado,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                    child: const Text(
-                      'Ver mapa completo',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 24),
-      ],
-    );
-  }
-
-  // BLOQUE 8 - RULETA VENTON
-  Widget _buildRuletaVenton() {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: const Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              '🎲 GIRA Y GANA',
-              style: TextStyle(
-                color: _dorado,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const RuletaPage()),
-              );
-            },
-            child: Container(
-              width: double.infinity,
-              height: 160,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
-                    blurRadius: 15,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFFFFD700), // dorado
-                    Color(0xFFF97316), // naranja
-                    Color(0xFFDC143C), // rojo
-                  ],
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.casino,
-                      color: Colors.white,
-                      size: 80,
-                    ),
-                    const SizedBox(width: 20),
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'RULETA VENTON',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          const Text(
-                            'Gira y gana descuentos',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 24),
-      ],
-    );
-  }
-
-  // BLOQUE 9 - LLAMADO A LA ACCION COMERCIAL
+  // Tarjeta dorada "TU NEGOCIO AQUÍ"
   Widget _buildLlamadoAccionComercial() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -2027,7 +797,7 @@ Descarga la app: vitrina digital de Santa Rosa de Cabal''';
     );
   }
 
-  // CAMBIO 10 - Footer internacional
+  // Footer internacional
   Widget _buildFooter() {
     return Column(
       children: [
