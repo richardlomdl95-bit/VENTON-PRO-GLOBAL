@@ -7,8 +7,40 @@ import '../widgets/franja_venton.dart';
 import 'experiencia_detalle_page.dart';
 import 'turismo_mapa_page.dart';
 
-class TurismoPage extends StatelessWidget {
+class TurismoPage extends StatefulWidget {
   const TurismoPage({super.key});
+
+  @override
+  State<TurismoPage> createState() => _TurismoPageState();
+}
+
+class _TurismoPageState extends State<TurismoPage> with TickerProviderStateMixin {
+  late List<AnimationController> _kenBurnsControllers;
+  late List<Animation<double>> _kenBurnsAnimations;
+
+  @override
+  void initState() {
+    super.initState();
+    final experiencias = MockData.turismoSantaRosa;
+    _kenBurnsControllers = List.generate(
+      experiencias.length,
+      (index) => AnimationController(
+        duration: const Duration(seconds: 8),
+        vsync: this,
+      )..repeat(reverse: true),
+    );
+    _kenBurnsAnimations = _kenBurnsControllers
+        .map((controller) => Tween<double>(begin: 1.0, end: 1.15).animate(controller))
+        .toList();
+  }
+
+  @override
+  void dispose() {
+    for (final controller in _kenBurnsControllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,15 +114,24 @@ class TurismoPage extends StatelessWidget {
                             children: [
                               AspectRatio(
                                 aspectRatio: 16 / 9,
-                                child: CachedNetworkImage(
-                                  imageUrl: e.imagenUrl,
-                                  fit: BoxFit.cover,
-                                  placeholder: (_, __) => Container(
-                                    color: theme.colorScheme.surfaceContainerHighest,
-                                  ),
-                                  errorWidget: (_, __, ___) => Container(
-                                    color: theme.colorScheme.surfaceContainerHighest,
-                                    child: const Icon(Icons.image, color: Colors.grey),
+                                child: AnimatedBuilder(
+                                  animation: _kenBurnsAnimations[i],
+                                  builder: (context, child) {
+                                    return Transform.scale(
+                                      scale: _kenBurnsAnimations[i].value,
+                                      child: child,
+                                    );
+                                  },
+                                  child: CachedNetworkImage(
+                                    imageUrl: e.imagenUrl,
+                                    fit: BoxFit.cover,
+                                    placeholder: (_, __) => Container(
+                                      color: theme.colorScheme.surfaceContainerHighest,
+                                    ),
+                                    errorWidget: (_, __, ___) => Container(
+                                      color: theme.colorScheme.surfaceContainerHighest,
+                                      child: const Icon(Icons.image, color: Colors.grey),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -128,7 +169,7 @@ class TurismoPage extends StatelessWidget {
                                   style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xFF0A0A0A),
+                                    color: Color(0xFF0A2540),
                                   ),
                                 ),
                                 const SizedBox(height: 8),
@@ -137,52 +178,54 @@ class TurismoPage extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.grey[600],
-                                    height: 1.4,
                                   ),
                                 ),
                                 const SizedBox(height: 12),
                                 Row(
                                   children: [
-                                    Icon(Icons.location_on,
-                                        color: AppTheme.azulMarino, size: 16),
+                                    Icon(
+                                      Icons.location_on,
+                                      size: 16,
+                                      color: AppTheme.dorado,
+                                    ),
                                     const SizedBox(width: 4),
                                     Expanded(
                                       child: Text(
                                         e.ubicacion,
-                                        style: const TextStyle(
-                                          fontSize: 13,
-                                          color: Color(0xFF0A0A0A),
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey[600],
                                         ),
                                       ),
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 12),
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: ElevatedButton.icon(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppTheme.azulMarino,
-                                      foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                        vertical: 10,
+                                const SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.access_time,
+                                      size: 16,
+                                      color: AppTheme.dorado,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      e.duracion,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey[600],
                                       ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    const Spacer(),
+                                    Text(
+                                      '\$${e.precio.toStringAsFixed(0)}',
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFFD4AF37),
                                       ),
                                     ),
-                                    onPressed: () => VentonHelpers.abrirWhatsApp(
-                                      numeroPersonalizado: e.whatsappDueno,
-                                      mensaje:
-                                          'Hola, vi "${e.titulo}" en VENTON PRO y quiero más información.',
-                                    ),
-                                    icon: const Icon(Icons.chat_bubble, size: 16),
-                                    label: Text(
-                                      'Hablar con ${e.nombreDueno.split(' ').last}',
-                                      style: const TextStyle(fontSize: 12),
-                                    ),
-                                  ),
+                                  ],
                                 ),
                               ],
                             ),

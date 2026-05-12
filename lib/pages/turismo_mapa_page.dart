@@ -33,6 +33,8 @@ class _TurismoMapaPageState extends State<TurismoMapaPage>
   static const Color _gris = Color(0xFF666666);
 
   final MapController _mapController = MapController();
+  late List<AnimationController> _pulseControllers;
+  late List<Animation<double>> _pulseAnimations;
 
   // 5 hoteles hardcoded de Santa Rosa de Cabal
   final List<HotelData> _hoteles = [
@@ -94,6 +96,34 @@ class _TurismoMapaPageState extends State<TurismoMapaPage>
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _pulseControllers = List.generate(
+      _hoteles.length,
+      (index) => AnimationController(
+        duration: const Duration(seconds: 2),
+        vsync: this,
+      )..repeat(),
+    );
+    _pulseAnimations = _pulseControllers
+        .map((controller) => Tween<double>(begin: 1.0, end: 2.0).animate(
+              CurvedAnimation(
+                parent: controller,
+                curve: Curves.easeInOut,
+              ),
+            ))
+        .toList();
+  }
+
+  @override
+  void dispose() {
+    for (final controller in _pulseControllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _negro,
@@ -116,7 +146,11 @@ class _TurismoMapaPageState extends State<TurismoMapaPage>
               ),
               // Marcadores de hoteles
               MarkerLayer(
-                markers: _hoteles.map((hotel) => _construirMarcador(hotel)).toList(),
+                markers: _hoteles.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final hotel = entry.value;
+                  return _construirMarcador(hotel, index);
+                }).toList(),
               ),
             ],
           ),
@@ -194,9 +228,9 @@ class _TurismoMapaPageState extends State<TurismoMapaPage>
   }
 
   // --------------------------------------------------------------------------
-  // CONSTRUCTOR DE MARCADORES
+  // CONSTRUCTOR DE MARCADORES CON ANIMACIÓN DE PULSO
   // --------------------------------------------------------------------------
-  Marker _construirMarcador(HotelData h) {
+  Marker _construirMarcador(HotelData h, int index) {
     return Marker(
       point: LatLng(h.lat, h.lng),
       width: 70,
@@ -205,7 +239,28 @@ class _TurismoMapaPageState extends State<TurismoMapaPage>
         onTap: () => _mostrarTarjetaHotel(h),
         child: Stack(
           children: [
-            // Pin principal
+            // Aura dorada con animación de pulso
+            AnimatedBuilder(
+              animation: _pulseAnimations[index],
+              builder: (context, child) {
+                return Transform.scale(
+                  scale: _pulseAnimations[index].value,
+                  child: Opacity(
+                    opacity: 1.0 - (_pulseAnimations[index].value - 1.0),
+                    child: Container(
+                      width: 70,
+                      height: 70,
+                      decoration: BoxDecoration(
+                        color: _dorado.withOpacity(0.3),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: _dorado, width: 2),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+            // Pin principal (fijo)
             Container(
               decoration: BoxDecoration(
                 color: h.recomendado ? _dorado : _gris,
@@ -371,9 +426,6 @@ class HotelData {
 // WIDGETS AUXILIARES
 // ============================================================================
 class _BotonRedondo extends StatelessWidget {
-  static const Color _dorado = Color(0xFFD4A017);
-  static const Color _grafito = Color(0xFF1A1A1A);
-  
   final IconData icono;
   final VoidCallback onTap;
 

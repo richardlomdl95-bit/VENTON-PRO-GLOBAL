@@ -98,16 +98,10 @@ class _RuletaPageState extends State<RuletaPage>
       premioAleatorio = indicesPerdedores[Random().nextInt(indicesPerdedores.length)];
     }
 
-    final anguloFinal = (vueltas * 2 * pi) + (premioAleatorio * 2 * pi / _premios.length);
+    final gradosPorSeccion = 360 / _premios.length;
+    final anguloFinal = (vueltas * 360) + (premioAleatorio * gradosPorSeccion) + (gradosPorSeccion / 2);
 
-    _spinAnimation = Tween<double>(
-      begin: 0,
-      end: anguloFinal,
-    ).animate(CurvedAnimation(
-      parent: _spinController,
-      curve: Curves.easeOutCubic,
-    ));
-
+    _spinController.reset();
     await _spinController.forward();
 
     setState(() {
@@ -115,116 +109,105 @@ class _RuletaPageState extends State<RuletaPage>
       _girando = false;
     });
 
-    // Resetear el controlador para próximos giros
-    _spinController.reset();
+    // Agregar vibración fuerte cuando se gana
+    if (premioAleatorio != 3 && premioAleatorio != 5 && premioAleatorio != 7) {
+      HapticFeedback.heavyImpact();
+    }
 
-    HapticFeedback.mediumImpact();
-
-    _mostrarResultado();
-
-    // NAVEGACIÓN AUTOMÁTICA AL MAPA CRUCIAL
-    Timer(const Duration(seconds: 3), () {
-      if (mounted) {
-        Navigator.of(context).pop(); // Cerrar ruleta
-        // Abrir mapa automáticamente después de 3 segundos sin bloquear navegación
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => const TurismoMapaPage(),
-          ),
-        );
-      }
-    });
+    _mostrarResultado(_premios[premioAleatorio]);
   }
 
-  void _mostrarResultado() {
-    if (_resultadoIndex < 0) return;
-
-    final premio = _premios[_resultadoIndex];
+  void _mostrarResultado(String premio) {
     final esGanador = !premio.contains('SIGUE INTENTANDO');
-
-    showModalBottomSheet(
+    
+    showDialog(
       context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (_) => Container(
-        margin: const EdgeInsets.all(20),
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: _negro,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: _negro,
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: esGanador ? _dorado : Colors.grey,
-            width: 2,
-          ),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              esGanador ? Icons.celebration : Icons.refresh,
+        content: Container(
+          margin: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: _negro,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
               color: esGanador ? _dorado : Colors.grey,
-              size: 60,
+              width: 2,
             ),
-            const SizedBox(height: 16),
-            Text(
-              esGanador ? '¡FELICIDADES!' : 'Sigue participando',
-              style: TextStyle(
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                esGanador ? Icons.celebration : Icons.refresh,
                 color: esGanador ? _dorado : Colors.grey,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+                size: 60,
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              premio,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            if (_contadorGlobal == 100)
-              const Text(
-                '¡GANASTE MEDIO LITRO DE CHAMPÚ!',
+              const SizedBox(height: 16),
+              Text(
+                esGanador ? '¡FELICIDADES!' : 'Sigue participando',
                 style: TextStyle(
-                  color: _dorado,
-                  fontSize: 16,
+                  color: esGanador ? _dorado : Colors.grey,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-            if (_contadorGlobal == 200)
-              const Text(
-                '¡GANASTE LITRO DE CHAMPÚ!',
-                style: TextStyle(
-                  color: _dorado,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+              const SizedBox(height: 8),
+              Text(
+                premio,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
                 ),
+                textAlign: TextAlign.center,
               ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _dorado,
-                  foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text(
-                  'ACEPTAR',
+              if (_contadorGlobal == 100)
+                const Text(
+                  '¡GANASTE MEDIO LITRO DE CHAMPÚ!',
                   style: TextStyle(
-                    fontWeight: FontWeight.bold,
+                    color: _dorado,
                     fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              if (_contadorGlobal == 200)
+                const Text(
+                  '¡GANASTE LITRO DE CHAMPÚ!',
+                  style: TextStyle(
+                    color: _dorado,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _dorado,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'ACEPTAR',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -301,14 +284,14 @@ class _RuletaPageState extends State<RuletaPage>
                             size: const Size(260, 260),
                             painter: RuletaPainter(
                               colores: [
-                                _dorado,
-                                _gris,
-                                _dorado,
-                                _gris,
-                                _dorado,
-                                _gris,
-                                _dorado,
-                                _gris,
+                                Color(0xFFFFD700), // dorado
+                                Color(0xFFDC143C), // rojo carmesí
+                                Color(0xFF10B981), // verde esmeralda
+                                Color(0xFF3B82F6), // azul real
+                                Color(0xFFF97316), // naranja
+                                Color(0xFF8B5CF6), // morado
+                                Color(0xFFEC4899), // rosa fucsia
+                                Color(0xFFFBBF24), // amarillo neon
                               ],
                               textos: _premios,
                             ),
@@ -356,53 +339,39 @@ class _RuletaPageState extends State<RuletaPage>
                 ),
               ),
               const SizedBox(height: 40),
-              Container(
+              SizedBox(
                 width: 200,
-                height: 60,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [_dorado, _dorado.withOpacity(0.8)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(30),
-                  boxShadow: [
-                    BoxShadow(
-                      color: _dorado.withOpacity(0.4),
-                      blurRadius: 15,
-                      offset: const Offset(0, 5),
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: _girando ? null : _girarRuleta,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _dorado,
+                    foregroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
                     ),
-                  ],
-                ),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: _girando ? null : _girarRuleta,
-                    borderRadius: BorderRadius.circular(30),
-                    child: const Center(
-                      child: Text(
-                        'GIRAR RULETA',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
+                    elevation: 8,
+                    shadowColor: _dorado.withOpacity(0.4),
+                  ),
+                  child: _girando
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                          ),
+                        )
+                      : const Text(
+                          'GIRAR',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                ),
               ),
-              const SizedBox(height: 20),
-              Text(
-                'Toca para girar y ganar premios',
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -413,18 +382,22 @@ class RuletaPainter extends CustomPainter {
   final List<Color> colores;
   final List<String> textos;
 
-  RuletaPainter({required this.colores, required this.textos});
+  RuletaPainter({
+    required this.colores,
+    required this.textos,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
-    final anglePerSegment = 2 * pi / colores.length;
+    final anglePerSection = 2 * pi / colores.length;
 
     for (int i = 0; i < colores.length; i++) {
-      final startAngle = i * anglePerSegment - pi / 2;
-      final endAngle = (i + 1) * anglePerSegment - pi / 2;
+      final startAngle = i * anglePerSection - pi / 2;
+      final sweepAngle = anglePerSection;
 
+      // Dibujar sección
       final paint = Paint()
         ..color = colores[i]
         ..style = PaintingStyle.fill;
@@ -432,11 +405,12 @@ class RuletaPainter extends CustomPainter {
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: radius),
         startAngle,
-        anglePerSegment,
+        sweepAngle,
         true,
         paint,
       );
 
+      // Dibujar borde
       final borderPaint = Paint()
         ..color = Colors.black
         ..style = PaintingStyle.stroke
@@ -445,58 +419,40 @@ class RuletaPainter extends CustomPainter {
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: radius),
         startAngle,
-        anglePerSegment,
+        sweepAngle,
         true,
         borderPaint,
       );
 
-      // Texto optimizado para evitar overlapping
-      String texto = textos[i];
-      
-      // Abreviaciones para textos largos
-      if (texto == 'SIGUE INTENTANDO') {
-        texto = 'SIGUE\nINTENT';
-      } else if (texto == '10% DESCUENTO') {
-        texto = '10%\nDTO';
-      } else if (texto == '5% DESCUENTO') {
-        texto = '5%\nDTO';
-      } else if (texto == '15% DESCUENTO') {
-        texto = '15%\nDTO';
-      } else if (texto == '20% DESCUENTO') {
-        texto = '20%\nDTO';
-      } else if (texto == 'ENVÍO GRATIS') {
-        texto = 'ENVÍO\nGRATIS';
-      }
-
-      final textPainter = TextPainter(
-        text: TextSpan(
-          text: texto,
-          style: const TextStyle(
-            color: Colors.black,
-            fontSize: 8,
-            fontWeight: FontWeight.bold,
-            height: 1.1,
-          ),
-        ),
-        textDirection: TextDirection.ltr,
-        textAlign: TextAlign.center,
-      );
-
-      final textAngle = startAngle + anglePerSegment / 2;
-      final textRadius = radius * 0.7; // Ajustado para mejor visibilidad
+      // Dibujar texto
+      final textAngle = startAngle + sweepAngle / 2;
+      final textRadius = radius * 0.7;
       final textX = center.dx + textRadius * cos(textAngle);
       final textY = center.dy + textRadius * sin(textAngle);
 
-      textPainter.layout(maxWidth: radius * 0.3); // Más estricto para evitar overlap
+      final textPainter = TextPainter(
+        text: TextSpan(
+          text: textos[i],
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      );
+
+      textPainter.layout();
       
-      // Dibujar texto con padding adicional
+      // Rotar texto
+      canvas.save();
+      canvas.translate(textX, textY);
+      canvas.rotate(textAngle + pi / 2);
       textPainter.paint(
         canvas,
-        Offset(
-          textX - textPainter.width / 2,
-          textY - textPainter.height / 2,
-        ),
+        Offset(-textPainter.width / 2, -textPainter.height / 2),
       );
+      canvas.restore();
     }
   }
 
