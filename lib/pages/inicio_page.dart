@@ -353,7 +353,6 @@ Descarga la app: vitrina digital de Santa Rosa de Cabal''';
                           fit: BoxFit.cover,
                           placeholder: (context, url) => const Center(
                             child: CircularProgressIndicator(color: _dorado)),
-                          ),
                           errorWidget: (context, url, error) => Container(
                             color: _grafito,
                             child: const Icon(Icons.image, color: Colors.grey),
