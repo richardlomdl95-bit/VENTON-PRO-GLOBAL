@@ -34,25 +34,27 @@ class ComunidadPage extends StatelessWidget {
           ),
           iconTheme: const IconThemeData(color: Color(0xFFD4A017)),
           elevation: 0,
-          bottom: TabBar(
-            backgroundColor: const Color(0xFF1A1A1A),
-            indicatorColor: const Color(0xFFD4A017),
-            labelColor: const Color(0xFFD4A017),
-            unselectedLabelColor: Colors.grey,
-            tabs: const [
-              Tab(
-                icon: Icon(Icons.play_circle),
-                text: "Videos",
-              ),
-              Tab(
-                icon: Icon(Icons.photo),
-                text: "Fotos",
-              ),
-              Tab(
-                icon: Icon(Icons.auto_stories),
-                text: "Historias",
-              ),
-            ],
+          bottom: Container(
+            color: const Color(0xFF1A1A1A),
+            child: TabBar(
+              indicatorColor: const Color(0xFFD4A017),
+              labelColor: const Color(0xFFD4A017),
+              unselectedLabelColor: Colors.grey,
+              tabs: const [
+                Tab(
+                  icon: Icon(Icons.play_circle),
+                  text: "Videos",
+                ),
+                Tab(
+                  icon: Icon(Icons.photo),
+                  text: "Fotos",
+                ),
+                Tab(
+                  icon: Icon(Icons.auto_stories),
+                  text: "Historias",
+                ),
+              ],
+            ),
           ),
         ),
         body: const TabBarView(
@@ -150,7 +152,7 @@ class _VideosTab extends StatelessWidget {
                       ),
                       SizedBox(height: 4),
                       Text(
-                        'Plan Top $100k',
+                        'Plan Top \$100k',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 11,
