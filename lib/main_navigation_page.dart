@@ -14,7 +14,7 @@ class MainNavigationPage extends StatefulWidget {
 
 class _MainNavigationPageState extends State {
   int _currentIndex = 0;
-  final List _pages = const [
+  final List<Widget> _pages = const [
     InicioPage(),
     TurismoPage(),
     CrearPage(),

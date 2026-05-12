@@ -232,6 +232,7 @@ class _CrearPageState extends State<CrearPage> {
                     title: 'PLAN TOP',
                     price: '\$100.000 COP/mes',
                     backgroundColor: const Color(0xFFD4A017),
+                    borderColor: Colors.black,
                     textColor: Colors.black,
                     badge: 'PREMIUM',
                     badgeColor: Colors.black,
