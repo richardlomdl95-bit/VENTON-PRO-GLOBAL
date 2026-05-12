@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
-import 'dart:io';
 
 class CrearPage extends StatefulWidget {
   const CrearPage({super.key});
@@ -13,131 +12,43 @@ class CrearPage extends StatefulWidget {
 
 class _CrearPageState extends State<CrearPage> {
   final ImagePicker _picker = ImagePicker();
-  File? _selectedMedia;
-  bool _isVideo = false;
-  final TextEditingController _textController = TextEditingController();
 
-  @override
-  void dispose() {
-    _textController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _takePhoto() async {
+  void _tomarFoto() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.camera);
     if (image != null) {
-      setState(() {
-        _selectedMedia = File(image.path);
-        _isVideo = false;
-      });
-      _showPreviewDialog();
+      final url = Uri.parse('https://wa.me/573225609121?text=Hola%20Ricardo%20tomé%20una%20foto%20para%20publicar%20en%20VENTON%20PRO');
+      await launchUrl(url, mode: LaunchMode.externalApplication);
     }
   }
 
-  Future<void> _recordVideo() async {
+  void _grabarVideo() async {
     final XFile? video = await _picker.pickVideo(
       source: ImageSource.camera,
       maxDuration: const Duration(seconds: 60),
     );
     if (video != null) {
-      setState(() {
-        _selectedMedia = File(video.path);
-        _isVideo = true;
-      });
-      _showPreviewDialog();
+      final url = Uri.parse('https://wa.me/573225609121?text=Hola%20Ricardo%20grabé%20un%20video%20para%20publicar%20en%20VENTON%20PRO');
+      await launchUrl(url, mode: LaunchMode.externalApplication);
     }
   }
 
-  Future<void> _pickFromGallery() async {
+  void _subirDeGaleria() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
-      setState(() {
-        _selectedMedia = File(image.path);
-        _isVideo = false;
-      });
-      _showPreviewDialog();
+      final url = Uri.parse('https://wa.me/573225609121?text=Hola%20Ricardo%20subí%20una%20foto%20desde%20galería%20para%20publicar%20en%20VENTON%20PRO');
+      await launchUrl(url, mode: LaunchMode.externalApplication);
     }
   }
 
-  void _shareSantaRosa() {
+  void _compartirVenton() {
     Share.share(
       '🌴 Conoce Santa Rosa de Cabal en VENTON PRO 👇\nDescarga la app: vitrina digital de Risaralda',
     );
   }
 
-  void _showPreviewDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(_isVideo ? 'Vista previa del video' : 'Vista previa de la foto'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 200,
-              height: 200,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: Colors.grey[200],
-              ),
-              child: _selectedMedia != null
-                  ? _isVideo
-                      ? const Icon(Icons.videocam, size: 50)
-                      : Image.file(_selectedMedia!, fit: BoxFit.cover)
-                  : const Icon(Icons.image, size: 50),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _textController,
-              decoration: const InputDecoration(
-                hintText: 'Añade un comentario...',
-                border: OutlineInputBorder(),
-              ),
-              maxLines: 3,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _publishToWhatsApp();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF25D366),
-              foregroundColor: Colors.white,
-            ),
-            child: Text(_isVideo ? 'Publicar video 24h' : 'Publicar historia 24h'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _publishToWhatsApp() async {
-    final url = Uri.parse('https://wa.me/573225609121?text=Hola%20publiqué%20mi%20${_isVideo ? 'video' : 'historia'}%20en%20VENTON%20PRO');
-    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No se pudo abrir WhatsApp')),
-        );
-      }
-    }
-  }
-
-  void _contactWhatsApp(String plan) async {
-    final url = Uri.parse('https://wa.me/573225609121?text=Hola%20Ricardo%20quiero%20el%20Plan%20$plan%20en%20VENTON%20PRO');
-    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No se pudo abrir WhatsApp')),
-        );
-      }
-    }
+  void _contactarPlan(String plan) async {
+    final url = Uri.parse('https://wa.me/573225609121?text=Hola%20Ricardo%20quiero%20el%20Plan%20${Uri.encodeComponent(plan)}%20en%20VENTON%20PRO');
+    await launchUrl(url, mode: LaunchMode.externalApplication);
   }
 
   @override
@@ -145,21 +56,21 @@ class _CrearPageState extends State<CrearPage> {
     return Scaffold(
       backgroundColor: const Color(0xFF0D0D0D),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0D0D0D),
+        backgroundColor: const Color(0xFFD4A017),
         title: const Text(
           'Crear',
           style: TextStyle(
-            color: Color(0xFFD4A017),
+            color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
-        iconTheme: const IconThemeData(color: Color(0xFFD4A017)),
+        iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // PARTE SUPERIOR - PUBLICA GRATIS
+            // SECCIÓN ARRIBA - PUBLICA GRATIS
             Container(
               width: double.infinity,
               margin: const EdgeInsets.all(16),
@@ -198,31 +109,31 @@ class _CrearPageState extends State<CrearPage> {
                     children: [
                       _buildActionCard(
                         icon: Icons.camera_alt,
-                        label: '📸 Tomar Foto',
-                        color: Colors.blue.shade100,
-                        iconColor: Colors.blue.shade700,
-                        onTap: _takePhoto,
+                        label: 'Tomar Foto',
+                        sublabel: 'Cámara directa',
+                        color: const Color(0xFF3B82F6),
+                        onTap: _tomarFoto,
                       ),
                       _buildActionCard(
                         icon: Icons.videocam,
-                        label: '🎥 Grabar Video',
-                        color: Colors.purple.shade100,
-                        iconColor: Colors.purple.shade700,
-                        onTap: _recordVideo,
+                        label: 'Grabar Video',
+                        sublabel: 'Hasta 60 segundos',
+                        color: const Color(0xFF8B5CF6),
+                        onTap: _grabarVideo,
                       ),
                       _buildActionCard(
                         icon: Icons.photo_library,
-                        label: '🖼️ Subir de Galería',
-                        color: Colors.green.shade100,
-                        iconColor: Colors.green.shade700,
-                        onTap: _pickFromGallery,
+                        label: 'De Galería',
+                        sublabel: 'Subir foto/video',
+                        color: const Color(0xFF10B981),
+                        onTap: _subirDeGaleria,
                       ),
                       _buildActionCard(
                         icon: Icons.share,
-                        label: '📲 Compartir Santa Rosa',
-                        color: const Color(0xFFD4A017).withOpacity(0.2),
-                        iconColor: const Color(0xFFD4A017),
-                        onTap: _shareSantaRosa,
+                        label: 'Compartir VENTON',
+                        sublabel: 'A tus redes',
+                        color: const Color(0xFFD4A017),
+                        onTap: _compartirVenton,
                       ),
                     ],
                   ),
@@ -232,21 +143,25 @@ class _CrearPageState extends State<CrearPage> {
 
             const SizedBox(height: 20),
 
-            // PARTE INFERIOR - ANUNCIA TU NEGOCIO
+            // SEPARADOR
             Container(
               width: double.infinity,
-              margin: const EdgeInsets.all(16),
+              height: 4,
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFD4A017),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // SECCIÓN ABAJO - ANUNCIA TU NEGOCIO
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 children: [
-                  // Separador
-                  Container(
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFD4A017),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    margin: const EdgeInsets.only(bottom: 16),
-                  ),
                   const Text(
                     '🏪 ¿TIENES UN NEGOCIO?',
                     style: TextStyle(
@@ -266,7 +181,7 @@ class _CrearPageState extends State<CrearPage> {
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'Llega a turistas de Colombia, Venezuela, España y USA',
+                    'Llega a turistas de Colombia 🇨🇴 Venezuela 🇻🇪 España 🇪🇸 USA 🇺🇸',
                     style: TextStyle(
                       color: Colors.grey,
                       fontSize: 12,
@@ -276,69 +191,70 @@ class _CrearPageState extends State<CrearPage> {
 
                   // PLAN VISIBLE
                   _buildPlanCard(
-                    title: 'BÁSICO',
+                    title: 'PLAN VISIBLE',
                     price: '\$20.000 COP/mes',
-                    features: [
-                      '✓ Aparece en listados',
-                      '✓ Foto del negocio',
-                      '✓ Botón WhatsApp',
-                    ],
-                    buttonColor: const Color(0xFF25D366),
-                    buttonText: 'Empezar',
-                    backgroundColor: Colors.white,
+                    backgroundColor: const Color(0xFF1A1A1A),
                     borderColor: const Color(0xFFD4A017),
-                    onTap: () => _contactWhatsApp('Visible'),
+                    features: const [
+                      'Aparece en listados',
+                      'Foto del negocio',
+                      'Botón WhatsApp directo',
+                    ],
+                    buttonText: 'Quiero este plan',
+                    onTap: () => _contactarPlan('Visible'),
                   ),
 
                   const SizedBox(height: 12),
 
                   // PLAN DESTACADO
                   _buildPlanCard(
-                    title: 'DESTACADO',
+                    title: 'PLAN DESTACADO',
                     price: '\$50.000 COP/mes',
-                    features: [
-                      '✓ Todo del Visible',
-                      '✓ Aparece en Historias',
-                      '✓ Foto más grande',
-                    ],
-                    buttonColor: const Color(0xFF25D366),
-                    buttonText: 'Empezar',
-                    backgroundColor: Colors.white,
+                    backgroundColor: const Color(0xFF1A1A1A),
                     borderColor: const Color(0xFFD4A017),
                     borderWidth: 3,
                     badge: 'POPULAR',
-                    badgeColor: Colors.red,
-                    onTap: () => _contactWhatsApp('Destacado'),
+                    badgeColor: const Color(0xFFDC143C),
+                    features: const [
+                      'Todo del Visible',
+                      'Aparece en Historias',
+                      'Foto más grande',
+                      'Prioridad en búsqueda',
+                    ],
+                    buttonText: 'Quiero este plan',
+                    onTap: () => _contactarPlan('Destacado'),
                   ),
 
                   const SizedBox(height: 12),
 
                   // PLAN TOP
                   _buildPlanCard(
-                    title: 'TOP',
+                    title: 'PLAN TOP',
                     price: '\$100.000 COP/mes',
-                    features: [
-                      '✓ Todo del Destacado',
-                      '✓ Primera pantalla',
-                      '✓ Video promocional',
-                    ],
-                    buttonColor: Colors.black,
-                    buttonText: 'Empezar',
                     backgroundColor: const Color(0xFFD4A017),
                     textColor: Colors.black,
                     badge: 'PREMIUM',
-                    badgeColor: const Color(0xFFD4A017),
-                    onTap: () => _contactWhatsApp('Top'),
+                    badgeColor: Colors.black,
+                    features: const [
+                      'Todo del Destacado',
+                      'Primera pantalla',
+                      'Video promocional',
+                      'Estadísticas mensuales',
+                      'Soporte prioritario',
+                    ],
+                    buttonText: 'Quiero este plan',
+                    buttonColor: Colors.black,
+                    onTap: () => _contactarPlan('Top'),
                   ),
 
                   const SizedBox(height: 20),
 
-                  // Banner PLAN SEMILLA
+                  // BANNER PLAN SEMILLA
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF25D366),
+                      color: const Color(0xFF10B981),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Column(
@@ -353,38 +269,36 @@ class _CrearPageState extends State<CrearPage> {
                         ),
                         const SizedBox(height: 4),
                         const Text(
-                          'Primer mes GRATIS para los primeros 20 negocios',
+                          'Primer mes GRATIS para los primeros 20 negocios de Santa Rosa',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 12,
+                            fontSize: 13,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () => _contactarPlan('Semilla'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: const Color(0xFF10B981),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: const Text(
+                              'Hablar con Ricardo',
+                              style: TextStyle(
+                                color: Color(0xFF10B981),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
                           ),
                         ),
                       ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Botón WhatsApp final
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: () => _contactWhatsApp('Semilla'),
-                      icon: const Icon(Icons.chat, color: Colors.white),
-                      label: const Text(
-                        '💬 Hablar con Ricardo ahora',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF25D366),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
                     ),
                   ),
 
@@ -401,8 +315,8 @@ class _CrearPageState extends State<CrearPage> {
   Widget _buildActionCard({
     required IconData icon,
     required String label,
+    required String sublabel,
     required Color color,
-    required Color iconColor,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
@@ -422,14 +336,23 @@ class _CrearPageState extends State<CrearPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: iconColor, size: 32),
+            Icon(icon, color: Colors.white, size: 50),
             const SizedBox(height: 8),
             Text(
               label,
               style: TextStyle(
-                color: iconColor,
-                fontSize: 11,
+                color: Colors.white,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              sublabel,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 12,
               ),
               textAlign: TextAlign.center,
             ),
@@ -442,36 +365,38 @@ class _CrearPageState extends State<CrearPage> {
   Widget _buildPlanCard({
     required String title,
     required String price,
-    required List<String> features,
-    required Color buttonColor,
-    required String buttonText,
     required Color backgroundColor,
-    Color textColor = Colors.black,
-    Color borderColor = const Color(0xFFD4A017),
+    required Color borderColor,
+    required List<String> features,
+    required String buttonText,
+    required VoidCallback onTap,
+    Color textColor = Colors.white,
+    Color buttonColor = const Color(0xFF25D366),
     double borderWidth = 1,
     String? badge,
     Color? badgeColor,
-    required VoidCallback onTap,
   }) {
     return Container(
       width: double.infinity,
-      height: 140,
+      height: 160,
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: borderColor, width: borderWidth),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Stack(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.only(right: 60),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -479,7 +404,7 @@ class _CrearPageState extends State<CrearPage> {
                   title,
                   style: TextStyle(
                     color: textColor,
-                    fontSize: 16,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -488,28 +413,55 @@ class _CrearPageState extends State<CrearPage> {
                   price,
                   style: TextStyle(
                     color: textColor,
-                    fontSize: 18,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: features.map((feature) => Padding(
-                      padding: const EdgeInsets.only(bottom: 2),
-                      child: Text(
-                        feature,
-                        style: TextStyle(
-                          color: textColor,
-                          fontSize: 11,
+                const SizedBox(height: 12),
+                ...features.map((feature) => Padding(
+                  padding: const EdgeInsets.only(bottom: 2),
+                  child: Row(
+                    children: [
+                      const Text('✓ ', style: TextStyle(color: Color(0xFFD4A017))),
+                      Expanded(
+                        child: Text(
+                          feature,
+                          style: TextStyle(
+                            color: textColor,
+                            fontSize: 11,
+                          ),
                         ),
                       ),
-                    )).toList(),
+                    ],
                   ),
-                ),
+                )),
+              ],
+            ),
+          ),
+          Positioned(
+            top: 8,
+            right: 8,
+            child: Column(
+              children: [
+                if (badge != null)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: badgeColor,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      badge!,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 8,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 80),
                 SizedBox(
-                  width: double.infinity,
+                  width: 100,
                   child: ElevatedButton(
                     onPressed: onTap,
                     style: ElevatedButton.styleFrom(
@@ -532,26 +484,6 @@ class _CrearPageState extends State<CrearPage> {
               ],
             ),
           ),
-          if (badge != null)
-            Positioned(
-              top: 8,
-              right: 8,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: badgeColor ?? Colors.red,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  badge!,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 8,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
         ],
       ),
     );

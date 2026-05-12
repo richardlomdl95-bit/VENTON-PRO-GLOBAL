@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'crear_page.dart';
 
@@ -17,64 +18,64 @@ class _ComunidadPageState extends State<ComunidadPage> with SingleTickerProvider
   final List<Map<String, String>> _videos = [
     {
       'nombre': 'Carlos · La Leyenda del Chorizo',
-      'imagen': 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&q=80',
+      'imagen': 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600',
     },
     {
       'nombre': 'María · Hotel Tacurrumbi',
-      'imagen': 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80',
+      'imagen': 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600',
     },
     {
       'nombre': 'Hernán · Termales Santa Rosa',
-      'imagen': 'https://images.unsplash.com/photo-1583416750470-965b2707b355?w=800&q=80',
+      'imagen': 'https://images.unsplash.com/photo-1583416750470-965b2707b355?w=600',
     },
     {
       'nombre': 'Marta · Tour del Café',
-      'imagen': 'https://images.unsplash.com/photo-1442550528053-c431ecb55509?w=800&q=80',
+      'imagen': 'https://images.unsplash.com/photo-1442550528053-c431ecb55509?w=600',
     },
     {
       'nombre': 'Pedro · Café del Parque',
-      'imagen': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&q=80',
+      'imagen': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600',
     },
   ];
 
   // Datos de fotos
   final List<String> _fotos = [
-    'https://images.unsplash.com/photo-1518684079-3c830d4305b8?w=800&q=80', // Paisaje cafetero
-    'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&q=80', // Comida
-    'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80', // Hotel
-    'https://images.unsplash.com/photo-1583416750470-965b2707b355?w=800&q=80', // Termales
-    'https://images.unsplash.com/photo-1442550528053-c431ecb55509?w=800&q=80', // Café
-    'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=800&q=80', // Cascadas
-    'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&q=80', // Eco-hotel
-    'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&q=80', // Asadero
-    'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&q=80', // Café del parque
+    'https://images.unsplash.com/photo-1583416750470-965b2707b355?w=400',
+    'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=400',
+    'https://images.unsplash.com/photo-1442550528053-c431ecb55509?w=400',
+    'https://images.unsplash.com/photo-1544025162-d76694265947?w=400',
+    'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400',
+    'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400',
+    'https://images.unsplash.com/photo-1518684079-3c830dcef090?w=400',
+    'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400',
+    'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400',
   ];
 
   // Datos de historias
   final List<Map<String, String>> _historias = [
     {
       'nombre': 'Hotel Tacurrumbi',
-      'imagen': 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80',
+      'imagen': 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600',
       'tiempo': 'hace 2 horas',
     },
     {
       'nombre': 'La Leyenda del Chorizo',
-      'imagen': 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&q=80',
+      'imagen': 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600',
       'tiempo': 'hace 4 horas',
     },
     {
       'nombre': 'Termales Santa Rosa',
-      'imagen': 'https://images.unsplash.com/photo-1583416750470-965b2707b355?w=800&q=80',
+      'imagen': 'https://images.unsplash.com/photo-1583416750470-965b2707b355?w=600',
       'tiempo': 'hace 6 horas',
     },
     {
       'nombre': 'Tour del Café',
-      'imagen': 'https://images.unsplash.com/photo-1442550528053-c431ecb55509?w=800&q=80',
+      'imagen': 'https://images.unsplash.com/photo-1442550528053-c431ecb55509?w=600',
       'tiempo': 'hace 8 horas',
     },
     {
       'nombre': 'Café del Parque',
-      'imagen': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&q=80',
+      'imagen': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600',
       'tiempo': 'hace 12 horas',
     },
   ];
@@ -103,9 +104,8 @@ class _ComunidadPageState extends State<ComunidadPage> with SingleTickerProvider
   }
 
   void _shareImage(String imageUrl) {
-    // Implementar compartir imagen
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Compartiendo imagen...')),
+    Share.share(
+      '📸 Mira esta foto de Santa Rosa de Cabal en VENTON PRO',
     );
   }
 
