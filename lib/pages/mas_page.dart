@@ -6,6 +6,7 @@ import 'ruleta_page.dart';
 import 'quimicos_page.dart';
 import 'favoritos_page.dart';
 import 'turismo_mapa_page.dart';
+import 'anunciar_page.dart';
 
 class MasPage extends StatelessWidget {
   const MasPage({super.key});
@@ -144,6 +145,16 @@ class MasPage extends StatelessWidget {
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AnunciarPage()),
+          );
+        },
+        backgroundColor: _dorado,
+        child: const Icon(Icons.campaign, color: Colors.white),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../core/venton_config.dart';
 import '../widgets/franja_venton.dart';
 import 'widgets/_grilla_productos.dart';
+import 'anunciar_page.dart';
 
 class QuimicosPage extends StatelessWidget {
   const QuimicosPage({super.key});
@@ -37,6 +38,16 @@ class QuimicosPage extends StatelessWidget {
             child: GrillaProductos(productos: MockData.quimicosPremium),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AnunciarPage()),
+          );
+        },
+        backgroundColor: const Color(0xFFD4A017),
+        child: const Icon(Icons.campaign, color: Colors.white),
       ),
     );
   }

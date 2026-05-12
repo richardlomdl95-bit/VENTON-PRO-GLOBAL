@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'core/splash_screen.dart';
 import 'core/theme.dart';
 import 'core/venton_config.dart';
+import 'pages/anunciar_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,6 +40,9 @@ class VentonProApp extends StatelessWidget {
       themeMode: ThemeMode.light,
       debugShowCheckedModeBanner: false,
       home: const SplashScreen(),
+      routes: {
+        '/anunciar': (context) => const AnunciarPage(),
+      },
     );
   }
 }

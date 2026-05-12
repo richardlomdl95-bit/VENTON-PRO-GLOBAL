@@ -6,6 +6,7 @@ import '../core/venton_helpers.dart';
 import '../widgets/franja_venton.dart';
 import 'experiencia_detalle_page.dart';
 import 'turismo_mapa_page.dart';
+import 'anunciar_page.dart';
 
 class TurismoPage extends StatefulWidget {
   const TurismoPage({super.key});
@@ -239,6 +240,16 @@ class _TurismoPageState extends State<TurismoPage> with TickerProviderStateMixin
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AnunciarPage()),
+          );
+        },
+        backgroundColor: const Color(0xFFD4A017),
+        child: const Icon(Icons.campaign, color: Colors.white),
       ),
     );
   }
