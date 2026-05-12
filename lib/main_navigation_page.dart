@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'inicio_page.dart';
-import 'turismo_page.dart';
-import 'crear_page.dart';
-import 'comunidad_page.dart';
-import 'mas_page.dart';
+import 'pages/inicio_page.dart';
+import 'pages/turismo_page.dart';
+import 'pages/crear_page.dart';
+import 'pages/comunidad_page.dart';
+import 'pages/mas_page.dart';
 import 'quimicos_page.dart';
 import 'ruleta_page.dart';
 import 'turismo_mapa_page.dart';
@@ -15,7 +15,7 @@ class MainNavigationPage extends StatefulWidget {
   State<MainNavigationPage> createState() => _MainNavigationPageState();
 }
 
-class _MainNavigationPageState extends State<MainNavigationPage> {
+class _MainNavigationPageState extends State<MainNavigationPage> with SingleTickerProviderStateMixin {
   int _currentIndex = 0;
   late PageController _pageController;
   late AnimationController _fabController;
@@ -134,8 +134,8 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
                       ),
                     ),
                   ),
-                );
-              },
+                },
+              ),
             ),
           ],
         ),
