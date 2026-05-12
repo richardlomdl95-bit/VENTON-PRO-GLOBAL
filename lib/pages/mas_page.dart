@@ -73,7 +73,7 @@ class MasPage extends StatelessWidget {
             const FranjaVenton(
               mensajes: [
                 '🔥 ANUNCIA TU NEGOCIO AQUÍ',
-                '⭐ PLAN TOP $100.000/MES',
+                '⭐ PLAN TOP \$100.000/MES',
                 '📲 WhatsApp 322 560 9121',
                 '✨ PRIMER MES GRATIS',
               ],

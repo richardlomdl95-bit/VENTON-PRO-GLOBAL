@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider/carousel_controller.dart';
 import 'turismo_page.dart';
 import 'turismo_mapa_page.dart';
 import 'comunidad_page.dart';
@@ -22,7 +23,7 @@ class _InicioPageState extends State<InicioPage> {
   int _indice = 0;
   String _paisSeleccionado = 'Selecciona un país';
   int _carouselIndex = 0;
-  final CarouselController _carouselController = CarouselController();
+  final CarouselSliderController _carouselController = CarouselSliderController();
 
   final List<String> _carouselImages = [
     'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=400&fit=crop',

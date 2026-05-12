@@ -107,7 +107,7 @@ class TurismoPage extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Text(
-                                    e.categoria,
+                                    e.titulo,
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 11,
