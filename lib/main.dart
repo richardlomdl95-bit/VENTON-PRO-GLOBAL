@@ -26,6 +26,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 // ============== CONSTANTES ==============
 const kFondo = Color(0xFF000814);
@@ -37,7 +39,11 @@ const kMiUsuario = 'tu_usuario';
 const kMiNombre = 'Tú';
 const kMiAvatar = 'https://i.pravatar.cc/150?img=12';
 
-void main() => runApp(const VentonProApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(const VentonProApp());
+}
 
 // ============== APP RAIZ ==============
 class VentonProApp extends StatelessWidget {
@@ -105,6 +111,43 @@ class Post {
     List<Comentario>? comentarios,
     this.tiempo = 'Hace 2h',
   }) : comentarios = comentarios ?? [];
+
+  // Firebase serialization
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'autorNombre': autorNombre,
+      'autorUsuario': autorUsuario,
+      'autorAvatar': autorAvatar,
+      'plan': plan,
+      'whatsapp': whatsapp,
+      'tipoMedia': tipoMedia.toString(),
+      'urlMedia': urlMedia,
+      'esLocal': esLocal,
+      'descripcion': descripcion,
+      'likes': likes,
+      'tiempo': tiempo,
+      'timestamp': DateTime.now(),
+    };
+  }
+
+  factory Post.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return Post(
+      id: data['id'] ?? doc.id,
+      autorNombre: data['autorNombre'] ?? '',
+      autorUsuario: data['autorUsuario'] ?? '',
+      autorAvatar: data['autorAvatar'] ?? '',
+      plan: data['plan'] ?? '',
+      whatsapp: data['whatsapp'],
+      tipoMedia: data['tipoMedia'] == 'MediaTipo.foto' ? MediaTipo.foto : MediaTipo.video,
+      urlMedia: data['urlMedia'] ?? '',
+      esLocal: data['esLocal'] ?? false,
+      descripcion: data['descripcion'] ?? '',
+      likes: data['likes'] ?? 0,
+      tiempo: data['tiempo'] ?? 'Hace 2h',
+    );
+  }
 }
 
 class Comentario {
@@ -172,6 +215,106 @@ class Mensaje {
   });
 }
 
+// ============== SERVICIO BASE DE DATOS ==============
+class DatabaseService {
+  static final FirebaseFirestore _db = FirebaseFirestore.instance;
+  static final CollectionReference postsRef = _db.collection('posts');
+  static final CollectionReference historiasRef = _db.collection('historias');
+  static final CollectionReference likesRef = _db.collection('likes');
+  static final CollectionReference comentariosRef = _db.collection('comentarios');
+
+  // Posts
+  static Future<List<Post>> getPosts() async {
+    try {
+      final snapshot = await postsRef.orderBy('timestamp', descending: true).get();
+      return snapshot.docs.map((doc) => Post.fromFirestore(doc)).toList();
+    } catch (e) {
+      // Si falla Firestore, usar datos locales
+      return AppState.I.posts;
+    }
+  }
+
+  static Future<void> savePost(Post post) async {
+    try {
+      await postsRef.doc(post.id).set(post.toMap());
+    } catch (e) {
+      print('Error guardando post: $e');
+    }
+  }
+
+  static Future<void> addPost(Post post) async {
+    try {
+      await postsRef.doc(post.id).set(post.toMap());
+    } catch (e) {
+      print('Error agregando post: $e');
+    }
+  }
+
+  // Likes
+  static Future<void> toggleLike(String postId, String userId) async {
+    try {
+      final likeRef = likesRef.doc('${userId}_$postId');
+      final doc = await likeRef.get();
+      
+      if (doc.exists) {
+        await likeRef.delete();
+        await postsRef.doc(postId).update({'likes': FieldValue.increment(-1)});
+      } else {
+        await likeRef.set({'postId': postId, 'userId': userId, 'timestamp': DateTime.now()});
+        await postsRef.doc(postId).update({'likes': FieldValue.increment(1)});
+      }
+    } catch (e) {
+      print('Error en toggleLike: $e');
+    }
+  }
+
+  static Future<bool> tieneLike(String postId, String userId) async {
+    try {
+      final doc = await likesRef.doc('${userId}_$postId').get();
+      return doc.exists;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Comentarios
+  static Future<void> agregarComentario(String postId, Comentario comentario) async {
+    try {
+      await comentariosRef.add({
+        'postId': postId,
+        'autor': comentario.autor,
+        'avatar': comentario.avatar,
+        'texto': comentario.texto,
+        'tiempo': comentario.tiempo,
+        'timestamp': DateTime.now(),
+      });
+      await postsRef.doc(postId).update({'comentarios': FieldValue.increment(1)});
+    } catch (e) {
+      print('Error agregando comentario: $e');
+    }
+  }
+
+  static Future<List<Comentario>> getComentarios(String postId) async {
+    try {
+      final snapshot = await comentariosRef
+          .where('postId', isEqualTo: postId)
+          .orderBy('timestamp', descending: true)
+          .get();
+      return snapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return Comentario(
+          autor: data['autor'] ?? '',
+          avatar: data['avatar'] ?? '',
+          texto: data['texto'] ?? '',
+          tiempo: data['tiempo'] ?? 'Ahora',
+        );
+      }).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+}
+
 // ============== ESTADO GLOBAL ==============
 class AppState extends ChangeNotifier {
   AppState._();
@@ -187,7 +330,7 @@ class AppState extends ChangeNotifier {
       autorAvatar:
           'https://images.unsplash.com/photo-1545079968-1feb95494244?w=200',
       plan: 'top',
-      whatsapp: '573001234567',
+      whatsapp: '3225609121',
       tipoMedia: MediaTipo.foto,
       urlMedia:
           'https://images.unsplash.com/photo-1545079968-1feb95494244?w=800',
@@ -215,7 +358,7 @@ class AppState extends ChangeNotifier {
       autorAvatar:
           'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=200',
       plan: 'destacado',
-      whatsapp: '573009876543',
+      whatsapp: '3225609121',
       tipoMedia: MediaTipo.foto,
       urlMedia:
           'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
@@ -238,7 +381,7 @@ class AppState extends ChangeNotifier {
       autorAvatar:
           'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=200',
       plan: 'destacado',
-      whatsapp: '573005554433',
+      whatsapp: '3225609121',
       tipoMedia: MediaTipo.video,
       urlMedia:
           'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
@@ -254,7 +397,7 @@ class AppState extends ChangeNotifier {
       autorAvatar:
           'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=200',
       plan: 'visible',
-      whatsapp: '573002221100',
+      whatsapp: '3225609121',
       tipoMedia: MediaTipo.foto,
       urlMedia:
           'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800',
@@ -348,9 +491,14 @@ class AppState extends ChangeNotifier {
     ),
   ];
 
-  bool tieneLike(String postId) => _miLike.contains(postId);
+  Future<bool> tieneLike(String postId) async {
+    return await DatabaseService.tieneLike(postId, kMiUsuario);
+  }
 
-  void toggleLike(String postId) {
+  Future<void> toggleLike(String postId) async {
+    await DatabaseService.toggleLike(postId, kMiUsuario);
+    
+    // Actualizar estado local inmediatamente
     final p = posts.firstWhere((p) => p.id == postId);
     if (_miLike.contains(postId)) {
       _miLike.remove(postId);
@@ -362,35 +510,44 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void agregarComentario(String postId, String texto) {
-    final p = posts.firstWhere((p) => p.id == postId);
-    p.comentarios.add(Comentario(
+  Future<void> agregarComentario(String postId, String texto) async {
+    final comentario = Comentario(
       autor: kMiUsuario,
       avatar: kMiAvatar,
       texto: texto,
-    ));
+      tiempo: 'Ahora',
+    );
+    
+    await DatabaseService.agregarComentario(postId, comentario);
+    
+    // Actualizar estado local inmediatamente
+    final p = posts.firstWhere((p) => p.id == postId);
+    p.comentarios.add(comentario);
     notifyListeners();
   }
 
-  void agregarPost({
+  Future<void> agregarPost({
     required MediaTipo tipo,
     required String rutaLocal,
     required String descripcion,
-  }) {
-    posts.insert(
-      0,
-      Post(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        autorNombre: kMiNombre,
-        autorUsuario: kMiUsuario,
-        autorAvatar: kMiAvatar,
-        tipoMedia: tipo,
-        urlMedia: rutaLocal,
-        esLocal: true,
-        descripcion: descripcion,
-        tiempo: 'Ahora',
-      ),
+  }) async {
+    final nuevoPost = Post(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      autorNombre: kMiNombre,
+      autorUsuario: kMiUsuario,
+      autorAvatar: kMiAvatar,
+      tipoMedia: tipo,
+      urlMedia: rutaLocal,
+      esLocal: true,
+      descripcion: descripcion,
+      tiempo: 'Ahora',
     );
+    
+    // Guardar en base de datos
+    await DatabaseService.addPost(nuevoPost);
+    
+    // Actualizar estado local inmediatamente
+    posts.insert(0, nuevoPost);
     notifyListeners();
   }
 }
@@ -403,6 +560,66 @@ Future<void> abrirWhatsApp(String numero, String mensaje) async {
   if (await canLaunchUrl(uri)) {
     await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
+}
+
+// WhatsApp instantáneo para Ricardo
+Future<void> contactarRicardo({String? negocio, String? contexto}) async {
+  String mensaje = 'Hola Ricardo, ';
+  if (negocio != null) {
+    mensaje += 'estoy interesado en $negocio';
+  }
+  if (contexto != null) {
+    mensaje += '. $contexto';
+  }
+  mensaje += ' desde VENTON PRO';
+  
+  await abrirWhatsApp('3225609121', mensaje);
+}
+
+// WhatsApp instantáneo para negocios
+Future<void> contactarNegocio(String nombre, String whatsapp, {String? servicio}) async {
+  String mensaje = 'Hola $nombre, ';
+  if (servicio != null) {
+    mensaje += 'necesito información sobre $servicio. ';
+  }
+  mensaje += 'Vi tu perfil en VENTON PRO';
+  
+  await abrirWhatsApp(whatsapp, mensaje);
+}
+
+// Compartido instantáneo en redes sociales
+Future<void> compartirEnRedes({
+  required String titulo,
+  required String descripcion,
+  String? url,
+  String? imagenUrl,
+}) async {
+  String mensaje = '$titulo\n\n$descripcion';
+  
+  if (url != null) {
+    mensaje += '\n\n$link: $url';
+  }
+  
+  mensaje += '\n\n🌴 Conoce más en VENTON PRO - Santa Rosa de Cabal';
+  
+  await Share.share(mensaje);
+}
+
+// Compartido específico para turismo
+Future<void> compartirTurismo({
+  required String lugar,
+  required String descripcion,
+  String? coordenadas,
+}) async {
+  String mensaje = '🌴 $lugar - Santa Rosa de Cabal\n\n$descripcion';
+  
+  if (coordenadas != null) {
+    mensaje += '\n\n📍 Ubicación: $coordenadas';
+  }
+  
+  mensaje += '\n\n📱 Descubre más lugares en VENTON PRO';
+  
+  await Share.share(mensaje);
 }
 
 // ============== SHELL ==============
@@ -797,16 +1014,19 @@ class _PostCard extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.send_outlined,
                       color: Colors.white, size: 26),
-                  onPressed: () => Share.share(
-                    '${post.autorNombre} en VENTON PRO:\n${post.descripcion}',
-                  ),
+                  onPressed: () => compartirEnRedes(
+                      titulo: post.autorNombre,
+                      descripcion: post.descripcion,
+                      imagenUrl: post.urlMedia,
+                    ),
                 ),
                 const Spacer(),
                 if (post.whatsapp != null)
                   TextButton.icon(
-                    onPressed: () => abrirWhatsApp(
+                    onPressed: () => contactarNegocio(
+                      post.autorNombre,
                       post.whatsapp!,
-                      'Hola, vi su negocio en VENTON PRO y quiero más información sobre ${post.autorNombre}.',
+                      servicio: 'información general',
                     ),
                     icon: const Icon(Icons.chat, color: Colors.black, size: 16),
                     label: const Text(
@@ -1535,10 +1755,7 @@ class PerfilPage extends StatelessWidget {
                       const SizedBox(width: 10),
                       Expanded(
                         child: OutlinedButton(
-                          onPressed: () => abrirWhatsApp(
-                            kWhatsappRicardo,
-                            'Hola Ricardo, soy vendedor VENTON PRO.',
-                          ),
+                          onPressed: () => contactarRicardo(negocio: 'Perfil VENTON PRO'),
                           style: OutlinedButton.styleFrom(
                             side: const BorderSide(color: kDorado),
                             padding: const EdgeInsets.symmetric(vertical: 10),
@@ -1548,6 +1765,49 @@ class PerfilPage extends StatelessWidget {
                         ),
                       ),
                     ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Botón Ruleta
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [kDorado, Color(0xFFB8860B)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: kDorado.withOpacity(0.3),
+                          blurRadius: 15,
+                          spreadRadius: 2,
+                        ),
+                      ],
+                    ),
+                    child: ElevatedButton.icon(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const RuletaPage()),
+                      ),
+                      icon: const Icon(Icons.casino, color: Colors.black),
+                      label: const Text(
+                        '🎯 RULETA VENTON PRO',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -1828,6 +2088,312 @@ class _ChatPageState extends State<ChatPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ============== RULETA ==============
+class RuletaPage extends StatefulWidget {
+  const RuletaPage({super.key});
+  
+  @override
+  State<RuletaPage> createState() => _RuletaPageState();
+}
+
+class _RuletaPageState extends State<RuletaPage> with TickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  bool _isSpinning = false;
+  int _selectedIndex = -1;
+  
+  final List<Map<String, dynamic>> _premios = [
+    {'emoji': '🎁', 'nombre': 'Descuento 20%', 'color': Color(0xFFD4A437)},
+    {'emoji': '🍽️', 'nombre': 'Cena Gratis', 'color': Color(0xFF25D366)},
+    {'emoji': '🏨', 'nombre': 'Noche Hotel', 'color': Color(0xFF3B82F6)},
+    {'emoji': '☕', 'nombre': 'Café Gratis', 'color': Color(0xFF8B5CF6)},
+    {'emoji': '🎫', 'nombre': 'Tour Gratis', 'color': Color(0xFF10B981)},
+    {'emoji': '🛍️', 'nombre': 'Shopping', 'color': Color(0xFFF59E0B)},
+    {'emoji': '🎯', 'nombre': 'Premio Mayor', 'color': Color(0xFFEF4444)},
+    {'emoji': '🌟', 'nombre': 'Estrella VIP', 'color': Color(0xFF6366F1)},
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 4),
+      vsync: this,
+    );
+    _animation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.decelerate),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _girarRuleta() {
+    if (_isSpinning) return;
+    
+    setState(() {
+      _isSpinning = true;
+      _selectedIndex = -1;
+    });
+    
+    _controller.reset();
+    _controller.forward().then((_) {
+      final randomIndex = (DateTime.now().millisecondsSinceEpoch % _premios.length);
+      setState(() {
+        _selectedIndex = randomIndex;
+        _isSpinning = false;
+      });
+      
+      _mostrarResultado(_premios[randomIndex]);
+    });
+  }
+
+  void _mostrarResultado(Map<String, dynamic> premio) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: kFondoTarjeta,
+        title: Text(
+          '¡FELICIDADES!',
+          style: TextStyle(color: kDorado, fontWeight: FontWeight.bold),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              premio['emoji'],
+              style: TextStyle(fontSize: 60),
+            ),
+            SizedBox(height: 16),
+            Text(
+              premio['nombre'],
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 16),
+            Text(
+              'Contacta a Ricardo para reclamar tu premio',
+              style: TextStyle(color: Colors.white70),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              contactarRicardo(negocio: 'Ruleta VENTON PRO', contexto: 'Gané: ${premio['nombre']}');
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: kDorado),
+            child: Text('Contactar', style: TextStyle(color: Colors.black)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: kFondo,
+      appBar: AppBar(
+        title: Text('🎯 RULETA VENTON PRO', style: TextStyle(color: kDorado)),
+        backgroundColor: kFondoBarra,
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          children: [
+            // Header
+            Container(
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: kFondoTarjeta,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: kDorado),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    '🎰 GIRA Y GANA!',
+                    style: TextStyle(
+                      color: kDorado,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Premios exclusivos de Santa Rosa de Cabal',
+                    style: TextStyle(color: Colors.white70),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+            
+            SizedBox(height: 32),
+            
+            // Ruleta
+            Container(
+              width: 300,
+              height: 300,
+              child: Stack(
+                children: [
+                  // Ruleta circular
+                  AnimatedBuilder(
+                    animation: _animation,
+                    builder: (context, child) {
+                      return Transform.rotate(
+                        angle: _animation.value * 2 * 3.14159265359 * 5,
+                        child: Container(
+                          width: 300,
+                          height: 300,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: SweepGradient(
+                              colors: _premios.map((p) => p['color'] as Color).toList(),
+                            ),
+                          ),
+                          child: Stack(
+                            children: List.generate(8, (index) {
+                              final angle = (index * 45) * (3.14159265359 / 180);
+                              return Transform.rotate(
+                                angle: angle,
+                                child: Transform.translate(
+                                  offset: Offset(0, -100),
+                                  child: Transform.rotate(
+                                    angle: -angle,
+                                    child: Center(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            _premios[index]['emoji'],
+                                            style: TextStyle(fontSize: 24),
+                                          ),
+                                          Text(
+                                            _premios[index]['nombre'],
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  
+                  // Botón central
+                  Positioned.fill(
+                    child: Center(
+                      child: GestureDetector(
+                        onTap: _girarRuleta,
+                        child: Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: kDorado,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: kDorado.withOpacity(0.5),
+                                blurRadius: 20,
+                                spreadRadius: 2,
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            Icons.play_arrow,
+                            color: Colors.black,
+                            size: 40,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                  // Indicador
+                  Positioned(
+                    top: 0,
+                    left: 150 - 10,
+                    child: Icon(
+                      Icons.arrow_drop_down,
+                      color: Colors.white,
+                      size: 40,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            SizedBox(height: 32),
+            
+            // Botón WhatsApp
+            Container(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () => contactarRicardo(negocio: 'Ruleta VENTON PRO'),
+                icon: Icon(Icons.message),
+                label: Text('Contactar a Ricardo'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF25D366),
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                ),
+              ),
+            ),
+            
+            SizedBox(height: 16),
+            
+            // Info
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: kFondoTarjeta,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    '📋 REGLAS',
+                    style: TextStyle(
+                      color: kDorado,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    '• Un giro por usuario\n• Válido por 24 horas\n• Contacta a Ricardo para reclamar\n• WhatsApp: 3225609121',
+                    style: TextStyle(color: Colors.white70, fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
