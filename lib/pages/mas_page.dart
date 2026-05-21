@@ -7,6 +7,8 @@ import 'quimicos_page.dart';
 import 'favoritos_page.dart';
 import 'turismo_mapa_page.dart';
 import 'anunciar_page.dart';
+import '../pagina_mapa.dart';
+import '../pagina_comunidad.dart';
 
 class MasPage extends StatelessWidget {
   const MasPage({super.key});
@@ -53,6 +55,18 @@ class MasPage extends StatelessWidget {
         'label': 'Mapa\nNegocios',
         'color': const Color(0xFF1976D2),
         'page': const TurismoMapaPage(),
+      },
+      {
+        'icon': Icons.map_outlined,
+        'label': 'Mapa\nVENTON PRO',
+        'color': const Color(0xFF1565C0),
+        'page': const PaginaMapa(),
+      },
+      {
+        'icon': Icons.forum_rounded,
+        'label': 'Comunidad\nChat',
+        'color': const Color(0xFF0288D1),
+        'page': const PaginaComunidad(),
       },
     ];
 
