@@ -1014,11 +1014,9 @@ class _PostCard extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.send_outlined,
                       color: Colors.white, size: 26),
-                  onPressed: () => compartirEnRedes(
-                      titulo: post.autorNombre,
-                      descripcion: post.descripcion,
-                      imagenUrl: post.urlMedia,
-                    ),
+                  onPressed: () => Share.share(
+                    '${post.autorNombre} en VENTON PRO:\n${post.descripcion}',
+                  ),
                 ),
                 const Spacer(),
                 if (post.whatsapp != null)
