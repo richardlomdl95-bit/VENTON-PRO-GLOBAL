@@ -491,6 +491,8 @@ class AppState extends ChangeNotifier {
     ),
   ];
 
+  bool estaLikeado(String postId) => _miLike.contains(postId);
+
   Future<bool> tieneLike(String postId) async {
     return await DatabaseService.tieneLike(postId, kMiUsuario);
   }
@@ -597,7 +599,7 @@ Future<void> compartirEnRedes({
   String mensaje = '$titulo\n\n$descripcion';
   
   if (url != null) {
-    mensaje += '\n\n$link: $url';
+    mensaje += '\n\nEnlace: $url';
   }
   
   mensaje += '\n\n🌴 Conoce más en VENTON PRO - Santa Rosa de Cabal';
@@ -912,7 +914,7 @@ class _PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final yaLike = AppState.I.tieneLike(post.id);
+    final yaLike = AppState.I.estaLikeado(post.id);
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       color: kFondoTarjeta,
