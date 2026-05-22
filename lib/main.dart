@@ -498,13 +498,12 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> toggleLike(String postId) async {
-    await DatabaseService.toggleLike(postId, kMiUsuario);
-    
-    // Actualizar estado local inmediatamente
     final p = posts.firstWhere((p) => p.id == postId);
-    if (_miLike.contains(postId)) {
+    final yaEstaba = _miLike.contains(postId);
+    await DatabaseService.toggleLike(postId, kMiUsuario);
+    if (yaEstaba) {
       _miLike.remove(postId);
-      p.likes--;
+      if (p.likes > 0) p.likes--;
     } else {
       _miLike.add(postId);
       p.likes++;
@@ -914,8 +913,11 @@ class _PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final yaLike = AppState.I.estaLikeado(post.id);
-    return Container(
+    return ListenableBuilder(
+      listenable: AppState.I,
+      builder: (context, _) {
+        final yaLike = AppState.I.estaLikeado(post.id);
+        return Container(
       margin: const EdgeInsets.only(bottom: 12),
       color: kFondoTarjeta,
       child: Column(
@@ -1088,6 +1090,8 @@ class _PostCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+      },
     );
   }
 
